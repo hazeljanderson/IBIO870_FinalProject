@@ -1,0 +1,50 @@
+---
+title: "Ecuador plant BIEN data cleaning"
+authors: "Hazel J. Anderson"
+data input: "none"
+data output: ""
+date: "2022-11-28"
+output: html_document
+---
+# Set file paths
+```{r}
+data_path <- file.path('G:/My Drive/IBIO 870/Final project/data/L0')
+output_path <- file.path('G:/My Drive/IBIO 870/Final project/data/L1')
+```
+
+# Load required packages
+```{r}
+library(WorldFlora)
+```
+
+# Read in BIEN occurrence data
+```{r}
+Ecuador_BIEN_occ <- read.csv(file.path(data_path,"Ecuador_BIEN_occurrence.csv"))
+```
+
+# Load World Flora Backbone
+```{r}
+#downloaded World Flora Backbone from http://104.198.143.165/files/WFO_Backbone/_WFOCompleteBackbone/WFO_Backbone.zip
+WFO.backbone <- read.delim(file.path(data_path,"WFO_Backbone/classification.txt"))
+```
+
+```{r}
+# remove Ecuador_BIEN_occ that have NA as a value of the scrubbed_species_binomial column
+Ecuador_BIEN_occ.NA_removed <- subset(Ecuador_BIEN_occ, scrubbed_species_binomial != "NA") 
+```
+
+
+# Prepare BIEN data for analysis with WFO.match
+```{r}
+bien_data.prepare <- WFO.prepare(spec.data = Ecuador_BIEN_occ.NA_removed, spec.full = "scrubbed_species_binomial", species.2.flag = TRUE, verbose = TRUE, counter = TRUE)
+```
+
+# Standarize plant names according to the World Flora Online taxonimic backbone
+```{r}
+bien_data.standard <- WFO.match(spec.data = bien_data.prepare, WFO.data = WFO.backbone, spec.name = "scrubbed_species_binomial", counter = TRUE)
+```
+
+
+# Merge standardized data
+```{r}
+```
