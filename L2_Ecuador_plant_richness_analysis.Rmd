@@ -1,0 +1,19 @@
+---
+title: "Ecuador plant richness analysis"
+authors: "Hazel J. Anderson"
+data input: "none"
+data output: ""
+date: "2022-11-30"
+output: html_document
+---
+
+# Set file paths
+```{r}
+data_path <- file.path('G:/My Drive/IBIO 870/Final project/data/L1')
+output_path <- file.path('G:/My Drive/IBIO 870/Final project/data/L2')
+```
+
+# Load required packages
+```{r}
+library(bdvis)
+```
