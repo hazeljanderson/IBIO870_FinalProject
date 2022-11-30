@@ -14,37 +14,297 @@ output_path <- file.path('G:/My Drive/IBIO 870/Final project/data/L1')
 
 # Load required packages
 ```{r}
-library(WorldFlora)
+library(bdc)
+library(bdDwC)
 ```
 
-# Read in BIEN occurrence data
+# Read in BIEN data
 ```{r}
-Ecuador_BIEN_occ <- read.csv(file.path(data_path,"Ecuador_BIEN_occurrence.csv"))
+database <- read.csv(file.path(data_path,"Ecuador_BIEN_occurrence.csv"))
 ```
 
-# Load World Flora Backbone
+# Configure BIEN data to Darwin Core Standards
 ```{r}
-#downloaded World Flora Backbone from http://104.198.143.165/files/WFO_Backbone/_WFOCompleteBackbone/WFO_Backbone.zip
-WFO.backbone <- read.delim(file.path(data_path,"WFO_Backbone/classification.txt"))
+# darwinizing a dataset
+config <- read.csv(file.path(output_path,"configuration table.csv"))
+
+# rename dataset fields
+database <- renameUserData(database, config)
+```
+
+# Pre-filter
+```{r}
+# Flag records missing species names
+check_pf <-
+  bdc_scientificName_empty(
+  data = database,
+  sci_name = "scientificName")
 ```
 
 ```{r}
-# remove Ecuador_BIEN_occ that have NA as a value of the scrubbed_species_binomial column
-Ecuador_BIEN_occ.NA_removed <- subset(Ecuador_BIEN_occ, scrubbed_species_binomial != "NA") 
+# Flag records missing partial or complete information on geographic coordinates
+check_pf <- bdc_coordinates_empty(
+  data = check_pf,
+  lat = "decimalLatitude",
+  lon = "decimalLongitude")
+```
+
+```{r}
+# Flag records with out-of-range coordinates: latitude > 90 or -90; longitude >180 or -180
+check_pf <- bdc_coordinates_outOfRange(
+  data = check_pf,
+  lat = "decimalLatitude",
+  lon = "decimalLongitude")
+
+```
+
+```{r}
+# Check record sources of your dataset using:
+check_pf %>%
+  dplyr::group_by(basisOfRecord) %>%
+  dplyr::summarise(n = dplyr::n())
+
+check_pf <- bdc_basisOfRecords_notStandard(
+  data = check_pf,
+  basisOfRecord = "basisOfRecord",
+  names_to_keep = "all")
 ```
 
 
-# Prepare BIEN data for analysis with WFO.match
 ```{r}
-bien_data.prepare <- WFO.prepare(spec.data = Ecuador_BIEN_occ.NA_removed, spec.full = "scrubbed_species_binomial", species.2.flag = TRUE, verbose = TRUE, counter = TRUE)
+# Deriving country names for records missing country names
+check_pf <- bdc_country_from_coordinates(
+  data = check_pf,
+  lat = "decimalLatitude",
+  lon = "decimalLongitude",
+  country = "country")
 ```
 
-# Standarize plant names according to the World Flora Online taxonimic backbone
 ```{r}
-bien_data.standard <- WFO.match(spec.data = bien_data.prepare, WFO.data = WFO.backbone, spec.name = "scrubbed_species_binomial", counter = TRUE)
+# Standardizing country names and getting country code information
+check_pf <- bdc_country_standardized(
+  data = check_pf,
+  country = "country"
+)
 ```
 
 
-# Merge standardized data
 ```{r}
+# Correcting latitude and longitude transposed
+check_pf <-
+  bdc_coordinates_transposed(
+    data = check_pf,
+    id = "collectionID",
+    sci_names = "scientificName",
+    lat = "decimalLatitude",
+    lon = "decimalLongitude",
+    country = "country_suggested",
+    countryCode = "countryCode",
+    border_buffer = 0.2, # in decimal degrees (~22 km at the equator)
+    save_outputs = FALSE
+  )
+```
+
+```{r}
+# Records outside one or multiple reference countries
+check_pf <-
+  bdc_coordinates_country_inconsistent(
+    data = check_pf,
+    country_name = "Ecuador",
+    country = "country_suggested",
+    lon = "decimalLongitude",
+    lat = "decimalLatitude",
+    dist = 0.1 # in decimal degrees (~11 km at the equator)
+  )
+```
+
+```{r}
+# Identifying records not geo-referenced but containing locality information
+xyFromLocality <- bdc_coordinates_from_locality(
+  data = check_pf,
+  locality = "locality",
+  lon = "decimalLongitude",
+  lat = "decimalLatitude",
+  save_outputs = FALSE
+)
+```
+
+
+```{r}
+# Report
+check_pf <- bdc_summary_col(data = check_pf)
+report <-
+  bdc_create_report(data = check_pf,
+                    database_id = "database_id",
+                    workflow_step = "prefilter",
+                    save_report = FALSE)
+report
+```
+
+```{r}
+# Figures
+figures <-
+bdc_create_figures(data = check_pf,
+                   database_id = "database_id",
+                   workflow_step = "prefilter",
+                   save_figures = FALSE)
+
+# Check figures using
+figures$.coordinates_country_inconsistent
+
+```
+
+```{r}
+# Filter out flags
+database <-
+  check_pf %>%
+  dplyr::filter(.summary == TRUE) %>%
+  bdc_filter_out_flags(data = ., col_to_remove = "all")
+```
+
+
+# Flagging common time issues
+```{r}
+check_time <-
+  bdc_eventDate_empty(data = database, eventDate = "verbatimEventDate")
+```
+
+```{r}
+check_time <-
+  bdc_year_from_eventDate(data = check_time, eventDate = "verbatimEventDate")
+```
+
+```{r}
+check_time <-
+  bdc_year_outOfRange(data = check_time,
+                      eventDate = "year",
+                      year_threshold = 1900)
+```
+
+```{r}
+check_time <- bdc_summary_col(data = check_time)
+```
+
+```{r}
+report <-
+  bdc_create_report(data = check_time,
+                    database_id = "database_id",
+                    workflow_step = "time",
+                    save_report = FALSE)
+
+report
+```
+
+```{r}
+figures <-
+bdc_create_figures(data = check_time,
+                   database_id = "dataset_id",
+                   workflow_step = "time",
+                   save_figures = FALSE)
+
+# Check figures using
+figures$time_year_BAR
+```
+
+```{r}
+database <-
+  check_time %>%
+  dplyr::filter(.summary == TRUE) %>%
+  bdc_filter_out_flags(data = ., col_to_remove = "all")
+```
+
+
+# Flagging common spatial issues
+```{r}
+check_space <-
+  bdc_coordinates_precision(
+    data = database,
+    lon = "decimalLongitude",
+    lat = "decimalLatitude",
+    ndec = c(0, 1) # number of decimals to be tested
+  )
+```
+
+```{r}
+check_space <-
+  CoordinateCleaner::clean_coordinates(
+    x =  check_space,
+    lon = "decimalLongitude",
+    lat = "decimalLatitude",
+    species = "scientificName",
+    countries = ,
+    tests = c(
+      "capitals",     # records within 2km around country and province centroids
+      "centroids",    # records within 1km of capitals centroids
+      "duplicates",   # duplicated records
+      "equal",        # records with equal coordinates
+      "gbif",         # records within 1 degree (~111km) of GBIF headsquare
+      "institutions", # records within 100m of zoo and herbaria
+      "outliers",     # outliers
+      "zeros",        # records with coordinates 0,0
+      "urban"         # records within urban areas
+    ),
+    capitals_rad = 2000,
+    centroids_rad = 1000,
+    centroids_detail = "both", # test both country and province centroids
+    inst_rad = 100, # remove zoo and herbaria within 100m
+    outliers_method = "quantile",
+    outliers_mtp = 5,
+    outliers_td = 1000,
+    outliers_size = 10,
+    range_rad = 0,
+    zeros_rad = 0.5,
+    capitals_ref = NULL,
+    centroids_ref = NULL,
+    country_ref = NULL,
+    country_refcol = "countryCode",
+    inst_ref = NULL,
+    range_ref = NULL,
+    # seas_ref = continent_border,
+    # seas_scale = 110,
+    urban_ref = NULL,
+    value = "spatialvalid" # result of tests are appended in separate columns
+  )
+```
+
+```{r}
+check_space <- bdc_summary_col(data = check_space)
+
+check_space %>%
+  dplyr::filter(.summary == FALSE) %>% # map only records flagged as FALSE
+  bdc_quickmap(
+    data = .,
+    lon = "decimalLongitude",
+    lat = "decimalLatitude",
+    col_to_map = ".summary",
+    size = 0.9
+  )
+```
+
+```{r}
+report <-
+  bdc_create_report(data = check_space,
+                    database_id = "database_id",
+                    workflow_step = "space",
+                    save_report = FALSE)
+
+report
+```
+
+```{r}
+figures <-
+bdc_create_figures(data = check_space,
+                   database_id = "database_id",
+                   workflow_step = "space",
+                   save_figures = TRUE)
+
+# Check figures using
+figures$.rou
+```
+
+```{r}
+database <-
+  check_space %>%
+  dplyr::filter(.summary == TRUE) %>%
+  bdc_filter_out_flags(data = ., col_to_remove = "all")
 ```
