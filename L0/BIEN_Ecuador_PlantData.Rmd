@@ -15,14 +15,42 @@ output_path <- file.path('G:/My Drive/IBIO 870/Final project/data/L0')
 # Load required packages
 ```{r}
 library(BIEN)
+library(bdvis)
 ```
 
 
 # Get data for Ecuador from BIEN database
 ```{r}
 # occurrence data
-Ecuador_BIEN_occ <- BIEN_occurrence_country("Ecuador", all.taxonomy = TRUE, observation.type = TRUE, collection.info = TRUE)
+Ecuador_BIEN_occ <- BIEN_occurrence_country("Ecuador", all.taxonomy = TRUE, observation.type = TRUE, political.boundaries = TRUE, collection.info = TRUE)
 ```
+
+# Summary of data
+```{r}
+str(Ecuador_BIEN_occ)
+```
+
+```{r}
+summary(Ecuador_BIEN_occ)
+```
+
+## summary visuals using bdvis
+```{r}
+data <- format_bdvis(
+  Ecuador_BIEN_occ,
+  Latitude = "latitude",
+  Longitude = "longitude",
+  Date_collected = "date_collected",
+  Scientific_name = "verbatim_scientific_name"
+  )
+
+```
+
+
+```{r}
+bdsummary(data)
+```
+
 
 # Write data to csv
 ```{r}
