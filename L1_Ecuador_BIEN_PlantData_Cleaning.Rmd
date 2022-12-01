@@ -119,18 +119,6 @@ check_pf <-
 ```
 
 ```{r}
-# Identifying records not geo-referenced but containing locality information
-xyFromLocality <- bdc_coordinates_from_locality(
-  data = check_pf,
-  locality = "locality",
-  lon = "decimalLongitude",
-  lat = "decimalLatitude",
-  save_outputs = FALSE
-)
-```
-
-
-```{r}
 # Report
 check_pf <- bdc_summary_col(data = check_pf)
 report <-
@@ -178,7 +166,7 @@ check_time <-
 check_time <-
   bdc_year_outOfRange(data = check_time,
                       eventDate = "year",
-                      year_threshold = 1900)
+                      year_threshold = 1800)
 ```
 
 ```{r}
@@ -198,7 +186,7 @@ report
 ```{r}
 figures <-
 bdc_create_figures(data = check_time,
-                   database_id = "dataset_id",
+                   database_id = "database_id",
                    workflow_step = "time",
                    save_figures = FALSE)
 
@@ -281,6 +269,7 @@ check_space %>%
   )
 ```
 
+
 ```{r}
 report <-
   bdc_create_report(data = check_space,
@@ -308,3 +297,66 @@ database <-
   dplyr::filter(.summary == TRUE) %>%
   bdc_filter_out_flags(data = ., col_to_remove = "all")
 ```
+
+# Clean and parse species names
+```{r}
+parse_names <-
+  bdc_clean_names(sci_names = database$scientificName, save_outputs = FALSE)
+```
+
+```{r}
+parse_names <-
+  parse_names %>%
+  dplyr::select(.uncer_terms, names_clean)
+
+database <- dplyr::bind_cols(database, parse_names)
+```
+
+```{r}
+query_names <- bdc_query_names_taxadb(
+  sci_name            = database$names_clean,
+  replace_synonyms    = TRUE, # replace synonyms by accepted names?
+  suggest_names       = TRUE, # try to found a candidate name for misspelled names?
+  suggestion_distance = 0.9, # distance between the searched and suggested names
+  db                  = "gbif", # taxonomic database
+  parallel            = FALSE, # should parallel processing be used?
+  ncores              = 2, # number of cores to be used in the parallelization process
+  export_accepted     = FALSE # save names linked to multiple accepted names
+)
+```
+
+```{r}
+database <-
+  database %>%
+  dplyr::rename(verbatim_scientificName = scientificName) %>%
+  dplyr::select(-names_clean) %>%
+  dplyr::bind_cols(., query_names)
+```
+
+```{r}
+report <-
+  bdc_create_report(data = database,
+                    database_id = "database_id",
+                    workflow_step = "taxonomy",
+                    save_report = FALSE)
+
+report
+```
+
+```{r}
+unresolved_names <-
+  bdc_filter_out_names(data = database,
+                       col_name = "notes",
+                       taxonomic_status = "accepted",
+                       opposite = TRUE)
+```
+
+```{r}
+output <-
+   bdc_filter_out_names(
+     data = database,
+     taxonomic_notes = "accepted",
+     opposite = FALSE
+   )
+```
+
