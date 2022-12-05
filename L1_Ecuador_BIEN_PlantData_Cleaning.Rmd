@@ -319,8 +319,8 @@ query_names <- bdc_query_names_taxadb(
   suggest_names       = TRUE, # try to found a candidate name for misspelled names?
   suggestion_distance = 0.9, # distance between the searched and suggested names
   db                  = "gbif", # taxonomic database
-  parallel            = FALSE, # should parallel processing be used?
-  ncores              = 2, # number of cores to be used in the parallelization process
+  parallel            = TRUE, # should parallel processing be used?
+  ncores              = 4, # number of cores to be used in the parallelization process
   export_accepted     = FALSE # save names linked to multiple accepted names
 )
 ```
@@ -355,8 +355,14 @@ unresolved_names <-
 output <-
    bdc_filter_out_names(
      data = database,
-     taxonomic_notes = "accepted",
+     taxonomic_status = "accepted",
      opposite = FALSE
    )
 ```
 
+# Save output data to csv
+```{r}
+# Export the data into a CSV file
+ecuador_BIEN_cleaned_path <- file.path(output_path,"Ecuador_BIEN_plant_cleaned.csv")
+write.csv(output, file = ecuador_BIEN_cleaned_path)
+```
