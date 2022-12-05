@@ -2,7 +2,7 @@
 title: "Ecuador plant BIEN data"
 authors: "Hazel J. Anderson"
 data input: "none"
-data output: ""
+data output: "Ecuador_BIEN_occurrence.csv"
 date: "2022-11-28"
 output: html_document
 ---
