@@ -1,7 +1,7 @@
 ---
 title: "Ecuador plant BIEN data cleaning"
 authors: "Hazel J. Anderson"
-data input: "none"
+data input: "Ecuador_BIEN_occurrence.csv"
 data output: ""
 date: "2022-11-28"
 output: html_document
@@ -16,6 +16,7 @@ output_path <- file.path('G:/My Drive/IBIO 870/Final project/data/L1')
 ```{r}
 library(bdc)
 library(bdDwC)
+library(bdvis)
 ```
 
 # Read in BIEN data
@@ -33,6 +34,7 @@ database <- renameUserData(database, config)
 ```
 
 # Pre-filter
+Modified from https://brunobrr.github.io/bdc/articles/prefilter.html
 ```{r}
 # Flag records missing species names
 check_pf <-
@@ -152,6 +154,7 @@ database <-
 
 
 # Flagging common time issues
+Modified from https://brunobrr.github.io/bdc/articles/time.html
 ```{r}
 check_time <-
   bdc_eventDate_empty(data = database, eventDate = "verbatimEventDate")
@@ -203,6 +206,7 @@ database <-
 
 
 # Flagging common spatial issues
+Modified from https://brunobrr.github.io/bdc/articles/space.html
 ```{r}
 check_space <-
   bdc_coordinates_precision(
@@ -299,6 +303,7 @@ database <-
 ```
 
 # Clean and parse species names
+Modified from https://brunobrr.github.io/bdc/articles/taxonomy.html
 ```{r}
 parse_names <-
   bdc_clean_names(sci_names = database$scientificName, save_outputs = FALSE)
@@ -358,6 +363,12 @@ output <-
      taxonomic_status = "accepted",
      opposite = FALSE
    )
+```
+
+# Summary
+```{r}
+output <- format_bdvis(output, Latitude = "decimalLatitude", Longitude = "decimalLongitude", Date_collected = "verbatimEventDate", Scientific_name = "scientificName")
+bdsummary(output)
 ```
 
 # Save output data to csv
