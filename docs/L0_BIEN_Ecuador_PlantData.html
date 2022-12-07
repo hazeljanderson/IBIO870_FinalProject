@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2022-12-07" />
+
+<title>Ecuador plant BIEN data</title>
+
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">IBIO870_FinalProject</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Ecuador plant BIEN data</h1>
+<h4 class="date">2022-12-07</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-12-07
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>IBIO870_FinalProject/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20221207code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20221207)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20221207code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20221207)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomhazeljandersonIBIO870FinalProjecttree5f91a6aa29e077bf91a83192526c1e1ec9483cbdtargetblank5f91a6aa">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/tree/5f91a6aa29e077bf91a83192526c1e1ec9483cbd" target="_blank">5f91a6a</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomhazeljandersonIBIO870FinalProjecttree5f91a6aa29e077bf91a83192526c1e1ec9483cbdtargetblank5f91a6aa"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/tree/5f91a6aa29e077bf91a83192526c1e1ec9483cbd" target="_blank">5f91a6a</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Unstaged changes:
+    Modified:   analysis/L1_Ecuador_BIEN_PlantData_Cleaning.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/L0_BIEN_Ecuador_PlantData.Rmd</code>) and HTML
+(<code>docs/L0_BIEN_Ecuador_PlantData.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/blob/5f91a6aa29e077bf91a83192526c1e1ec9483cbd/analysis/L0_BIEN_Ecuador_PlantData.Rmd" target="_blank">5f91a6a</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-07
+</td>
+<td>
+convert file structure
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-file-paths" class="section level1">
+<h1>Set file paths</h1>
+<pre class="r"><code>data_path &lt;- file.path(&#39;G:/My Drive/IBIO 870/Final project/data/L0&#39;)
+output_path &lt;- file.path(&#39;G:/My Drive/IBIO 870/Final project/data/L0&#39;)</code></pre>
+</div>
+<div id="load-required-packages" class="section level1">
+<h1>Load required packages</h1>
+<pre class="r"><code>library(BIEN)</code></pre>
+<pre><code>Loading required package: RPostgreSQL</code></pre>
+<pre><code>Loading required package: DBI</code></pre>
+<pre><code>Type vignette(&quot;BIEN&quot;) or vignette(&quot;BIEN_tutorial&quot;) to get started</code></pre>
+<pre><code>Note: The BIEN servers are currently undergoing updates and may be slower than usual at present.</code></pre>
+<pre class="r"><code>library(bdvis)</code></pre>
+</div>
+<div id="get-data-for-ecuador-from-bien-database"
+class="section level1">
+<h1>Get data for Ecuador from BIEN database</h1>
+<pre class="r"><code># occurrence data
+Ecuador_BIEN_occ &lt;- BIEN_occurrence_country(&quot;Ecuador&quot;, all.taxonomy = TRUE, observation.type = TRUE, political.boundaries = TRUE, collection.info = TRUE)</code></pre>
+</div>
+<div id="summary-of-data" class="section level1">
+<h1>Summary of data</h1>
+<pre class="r"><code>str(Ecuador_BIEN_occ)</code></pre>
+<pre><code>&#39;data.frame&#39;:   304031 obs. of  32 variables:
+ $ scrubbed_species_binomial  : chr  NA NA NA NA ...
+ $ verbatim_family            : chr  &quot;Aneuraceae&quot; &quot;Clusiaceae&quot; &quot;Asteraceae&quot; &quot;Piperaceae&quot; ...
+ $ verbatim_scientific_name   : chr  &quot;Riccardia Gray&quot; &quot;Clusia L.&quot; &quot;Diplostephium Kunth&quot; &quot;Piper L.&quot; ...
+ $ family_matched             : chr  &quot;Aneuraceae&quot; &quot;Clusiaceae&quot; &quot;Asteraceae&quot; &quot;Piperaceae&quot; ...
+ $ name_matched               : chr  &quot;Riccardia&quot; &quot;Clusia&quot; &quot;Diplostephium&quot; &quot;Piper&quot; ...
+ $ name_matched_author        : chr  &quot;Gray&quot; &quot;L.&quot; &quot;Kunth&quot; &quot;L.&quot; ...
+ $ higher_plant_group         : chr  &quot;bryophytes&quot; &quot;flowering plants&quot; &quot;flowering plants&quot; &quot;flowering plants&quot; ...
+ $ scrubbed_taxonomic_status  : chr  &quot;Accepted&quot; &quot;Accepted&quot; &quot;Accepted&quot; &quot;Accepted&quot; ...
+ $ scrubbed_family            : chr  &quot;Aneuraceae&quot; &quot;Clusiaceae&quot; &quot;Asteraceae&quot; &quot;Piperaceae&quot; ...
+ $ scrubbed_author            : chr  &quot;Gray&quot; &quot;L.&quot; &quot;Kunth&quot; &quot;L.&quot; ...
+ $ country                    : chr  &quot;Ecuador&quot; &quot;Ecuador&quot; &quot;Ecuador&quot; &quot;Ecuador&quot; ...
+ $ state_province             : chr  &quot;Azuay&quot; &quot;Loja&quot; &quot;Cotopaxi&quot; NA ...
+ $ county                     : chr  NA NA NA NA ...
+ $ locality                   : chr  &quot;Páramos El Cajas west of Sayausí and Cuenca. Bunchgrass-páramo, Plantago rigida bog and small lakes.&quot; &quot;Finca of the Calderón family, taking a trail NE from Mercadillo towards the crest. Cloud forest remnants.; Clusia&quot; &quot;Illiniza Sur, faldas Sur-orientales. Sector Chantambo.&quot; &quot;Entre Balzapamba y Sta. Lucía, al lado de la pista&quot; ...
+ $ elevation_m                : num  NA 1600 3650 NA 580 3700 NA 1280 NA NA ...
+ $ latitude                   : num  -2.833 -4 -0.661 -1.748 -1.567 ...
+ $ longitude                  : num  -79.2 -80 -78.7 -79.1 -77.4 ...
+ $ date_collected             : Date, format: &quot;1981-01-04&quot; &quot;2000-08-13&quot; ...
+ $ datasource                 : chr  &quot;GBIF&quot; &quot;MO&quot; &quot;MO&quot; &quot;GBIF&quot; ...
+ $ dataset                    : chr  &quot;AAU&quot; &quot;AAU&quot; &quot;MO&quot; &quot;MA&quot; ...
+ $ dataowner                  : chr  &quot;AAU&quot; &quot;AAU&quot; &quot;MO&quot; &quot;MA&quot; ...
+ $ custodial_institution_codes: chr  &quot;AAU&quot; &quot;AAU&quot; &quot;MO&quot; &quot;MA&quot; ...
+ $ collection_code            : chr  &quot;Herbarium&quot; NA NA &quot;MA&quot; ...
+ $ datasource_id              : num  4161 267 267 4584 267 ...
+ $ catalog_number             : chr  &quot;47839772&quot; NA NA &quot;1936556347&quot; ...
+ $ recorded_by                : chr  &quot;H.  Balslev&quot; &quot;GUSTAFSSON&quot; &quot;Mauricio Gavilanes&quot; &quot;A. Garmendia &amp; A. Hualpa&quot; ...
+ $ record_number              : chr  NA &quot;383&quot; &quot;104&quot; &quot;833&quot; ...
+ $ date_collected             : Date, format: &quot;1981-01-04&quot; &quot;2000-08-13&quot; ...
+ $ identified_by              : chr  NA NA NA &quot;A. Garmendia&quot; ...
+ $ date_identified            : Date, format: NA NA ...
+ $ identification_remarks     : chr  NA NA NA NA ...
+ $ observation_type           : chr  &quot;specimen&quot; &quot;specimen&quot; &quot;specimen&quot; &quot;specimen&quot; ...</code></pre>
+<pre class="r"><code>summary(Ecuador_BIEN_occ)</code></pre>
+<pre><code> scrubbed_species_binomial verbatim_family    verbatim_scientific_name
+ Length:304031             Length:304031      Length:304031           
+ Class :character          Class :character   Class :character        
+ Mode  :character          Mode  :character   Mode  :character        
+                                                                      
+                                                                      
+                                                                      
+                                                                      
+ family_matched     name_matched       name_matched_author higher_plant_group
+ Length:304031      Length:304031      Length:304031       Length:304031     
+ Class :character   Class :character   Class :character    Class :character  
+ Mode  :character   Mode  :character   Mode  :character    Mode  :character  
+                                                                             
+                                                                             
+                                                                             
+                                                                             
+ scrubbed_taxonomic_status scrubbed_family    scrubbed_author   
+ Length:304031             Length:304031      Length:304031     
+ Class :character          Class :character   Class :character  
+ Mode  :character          Mode  :character   Mode  :character  
+                                                                
+                                                                
+                                                                
+                                                                
+   country          state_province        county            locality        
+ Length:304031      Length:304031      Length:304031      Length:304031     
+ Class :character   Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+  elevation_m          latitude        longitude      date_collected      
+ Min.   :       0   Min.   :-4.967   Min.   :-91.65   Min.   :0004-10-09  
+ 1st Qu.:     300   1st Qu.:-2.600   1st Qu.:-79.00   1st Qu.:1983-02-20  
+ Median :    1250   Median :-1.050   Median :-78.50   Median :1989-11-27  
+ Mean   :    1729   Mean   :-1.367   Mean   :-78.39   Mean   :1988-09-21  
+ 3rd Qu.:    2600   3rd Qu.:-0.016   3rd Qu.:-78.02   3rd Qu.:1997-02-23  
+ Max.   :30503400   Max.   : 1.446   Max.   :-75.23   Max.   :4684-03-16  
+ NA&#39;s   :132456     NA&#39;s   :28540    NA&#39;s   :28540    NA&#39;s   :34589       
+  datasource          dataset           dataowner        
+ Length:304031      Length:304031      Length:304031     
+ Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character  
+                                                         
+                                                         
+                                                         
+                                                         
+ custodial_institution_codes collection_code    datasource_id 
+ Length:304031               Length:304031      Min.   :  27  
+ Class :character            Class :character   1st Qu.: 267  
+ Mode  :character            Mode  :character   Median : 267  
+                                                Mean   :1932  
+                                                3rd Qu.:4161  
+                                                Max.   :4946  
+                                                NA&#39;s   :44    
+ catalog_number     recorded_by        record_number      date_collected      
+ Length:304031      Length:304031      Length:304031      Min.   :0004-10-09  
+ Class :character   Class :character   Class :character   1st Qu.:1983-02-20  
+ Mode  :character   Mode  :character   Mode  :character   Median :1989-11-27  
+                                                          Mean   :1988-09-21  
+                                                          3rd Qu.:1997-02-23  
+                                                          Max.   :4684-03-16  
+                                                          NA&#39;s   :34589       
+ identified_by      date_identified      identification_remarks
+ Length:304031      Min.   :0002-01-01   Length:304031         
+ Class :character   1st Qu.:1992-01-01   Class :character      
+ Mode  :character   Median :1997-01-01   Mode  :character      
+                    Mean   :1999-04-20                         
+                    3rd Qu.:2003-01-01                         
+                    Max.   :9999-01-01                         
+                    NA&#39;s   :199756                             
+ observation_type  
+ Length:304031     
+ Class :character  
+ Mode  :character  
+                   
+                   
+                   
+                   </code></pre>
+<div id="summary-visuals-using-bdvis" class="section level2">
+<h2>summary visuals using bdvis</h2>
+<pre class="r"><code>data &lt;- format_bdvis(
+  Ecuador_BIEN_occ,
+  Latitude = &quot;latitude&quot;,
+  Longitude = &quot;longitude&quot;,
+  Date_collected = &quot;date_collected&quot;,
+  Scientific_name = &quot;verbatim_scientific_name&quot;
+  )</code></pre>
+<pre><code>Mapping via individual parameters</code></pre>
+<pre><code>Changed &quot;latitude&quot; to &quot;Latitude&quot;</code></pre>
+<pre><code>Changed &quot;longitude&quot; to &quot;Longitude&quot;</code></pre>
+<pre><code>Changed &quot;date_collected&quot; to &quot;Date_collected&quot;</code></pre>
+<pre><code>Changed &quot;verbatim_scientific_name&quot; to &quot;Scientific_name&quot;</code></pre>
+<pre class="r"><code>bdsummary(data)</code></pre>
+<pre><code>
+ Total no of records = 304031 
+
+ Temporal coverage... 
+ Date range of the records from  0004-10-09  to  4684-03-16 
+
+ Taxonomic coverage... 
+ No of Families :  0 
+ No of Genus :  0 
+ No of Species :  25771 
+
+ Spatial coverage ... 
+ Bounding box of records  -4.966667 , -91.653411  -  1.44557 , -75.2344 
+ Degree celles covered :  8 
+ % degree cells covered :  8.33333333333333 </code></pre>
+</div>
+</div>
+<div id="write-data-to-csv" class="section level1">
+<h1>Write data to csv</h1>
+<pre class="r"><code>Ecuador_BIEN_occurrence_path &lt;- file.path(output_path,&quot;Ecuador_BIEN_occurrence.csv&quot;)
+write.csv(Ecuador_BIEN_occ, file = Ecuador_BIEN_occurrence_path)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.2.2 (2022-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 22621)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] bdvis_0.2.33      BIEN_1.2.5        RPostgreSQL_0.7-4 DBI_1.1.3        
+
+loaded via a namespace (and not attached):
+  [1] nlme_3.1-160       fs_1.5.2           sf_1.0-9          
+  [4] bold_1.2.0         bit64_4.0.5        doParallel_1.0.17 
+  [7] RColorBrewer_1.1-3 rprojroot_2.0.3    tools_4.2.2       
+ [10] bslib_0.4.1        rgdal_1.6-2        utf8_1.2.2        
+ [13] R6_2.5.1           KernSmooth_2.23-20 rgeos_0.5-9       
+ [16] colorspace_2.0-3   raster_3.6-3       sp_1.5-1          
+ [19] tidyselect_1.2.0   fasterize_1.0.3    bit_4.0.4         
+ [22] curl_4.3.3         compiler_4.2.2     git2r_0.30.1      
+ [25] chron_2.3-58       cli_3.4.1          xml2_1.3.3        
+ [28] sass_0.4.4         scales_1.2.1       classInt_0.4-8    
+ [31] proxy_0.4-27       stringr_1.4.1      digest_0.6.30     
+ [34] rmarkdown_2.18     pkgconfig_2.0.3    htmltools_0.5.3   
+ [37] plotrix_3.8-2      fastmap_1.1.0      maps_3.4.1        
+ [40] rlang_1.0.6        rstudioapi_0.14    httpcode_0.3.0    
+ [43] RSQLite_2.2.19     shiny_1.7.3        treemap_2.4-3     
+ [46] jquerylib_0.1.4    generics_0.1.3     zoo_1.8-11        
+ [49] jsonlite_1.8.3     dplyr_1.0.10       magrittr_2.0.3    
+ [52] Rcpp_1.0.9         munsell_0.5.0      fansi_1.0.3       
+ [55] ape_5.6-2          proto_1.0.0        lifecycle_1.0.3   
+ [58] sqldf_0.4-11       terra_1.6-17       stringi_1.7.8     
+ [61] whisker_0.4        yaml_2.3.6         plyr_1.8.8        
+ [64] grid_4.2.2         blob_1.2.3         parallel_4.2.2    
+ [67] promises_1.2.0.1   crayon_1.5.2       lattice_0.20-45   
+ [70] conditionz_0.1.0   knitr_1.41         pillar_1.8.1      
+ [73] igraph_1.3.5       uuid_1.1-0         taxize_0.9.100    
+ [76] codetools_0.2-18   crul_1.3           glue_1.6.2        
+ [79] evaluate_0.18      data.table_1.14.4  vctrs_0.5.0       
+ [82] httpuv_1.6.6       foreach_1.5.2      gtable_0.3.1      
+ [85] reshape_0.8.9      assertthat_0.2.1   gsubfn_0.7        
+ [88] cachem_1.0.6       ggplot2_3.4.0      xfun_0.34         
+ [91] gridBase_0.4-7     mime_0.12          xtable_1.8-4      
+ [94] e1071_1.7-12       later_1.3.0        class_7.3-20      
+ [97] tibble_3.1.8       iterators_1.0.14   memoise_2.0.1     
+[100] workflowr_1.7.0    units_0.8-0        ellipsis_0.3.2    </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
