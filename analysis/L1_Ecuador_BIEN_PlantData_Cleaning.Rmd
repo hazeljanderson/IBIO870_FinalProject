@@ -28,6 +28,7 @@ database <- read.csv(file.path(data_path,"Ecuador_BIEN_occurrence.csv"))
 ```{r}
 # darwinizing a dataset
 config <- read.csv(file.path(output_path,"configuration table.csv"))
+print(config)
 
 # rename dataset fields
 database <- renameUserData(database, config)
@@ -369,6 +370,14 @@ output <-
 ```{r}
 output <- format_bdvis(output, Latitude = "decimalLatitude", Longitude = "decimalLongitude", Date_collected = "verbatimEventDate", Scientific_name = "scientificName")
 bdsummary(output)
+```
+
+# Subset data for use in L2 analysis
+```{r}
+#
+output_withElevation<-subset(output, output$verbatimElevation != "NA",)
+# remove columns not needed for analysis
+output <- output[ , c("scientificName", "decimalLatitude", "decimalLongitude", "verbatimEventDate", "year", "vertbatimElevation")]
 ```
 
 # Save output data to csv
