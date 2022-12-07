@@ -166,8 +166,6 @@ raster_grid <- fasterize(
   background = NA,
 )
 #Write the richness raster to a file 
-writeRaster(raster_grid, filename="G:/Shared drives/SpaCE_Lab_FRUGIVORIA/analysis/MODIS_data_2019/plant_ric.tif", format="GTiff")
-#read in raster
-raster_grid <- raster("G:/Shared drives/SpaCE_Lab_FRUGIVORIA/analysis/MODIS_data_2019/plant_ric.tif")
+writeRaster(raster_grid, filename=filepath(output_path,"plant_ric.tif"), format="GTiff")
 ```
 
