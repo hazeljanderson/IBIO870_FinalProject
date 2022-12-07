@@ -33,22 +33,48 @@ Ecuador_plants <- read.csv(file.path(data_path,"Ecuador_BIEN_plant_cleaned.csv")
 ```
 
 # Calculate richness
-Modified from https://github.com/bioXgeo/neotropical_plants/blob/master/archive/EcuadorPlantsStackedSpeciesMaps.Rmd
+Modified from https://github.com/bioXgeo/neotropical_plants/blob/master/archive/EcuadorPlantsStackedSpeciesMaps.Rmd & https://luisdva.github.io/rstats/richness/
+
+## Convert data into sf object
+```{r}
+# This defines the CRS for the US in WGS 1984 (world geographic 1984). 
+wgs1984.proj <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+
+# Reference the columns with "lon" and "lat" to make a spatial points dataframe
+Ecuador_plants_points <- SpatialPoints(coords=Ecuador_plants[,c(3,4)], proj4string=wgs1984.proj)
+
+# convert to sf
+Ecuador_plants_sf <- st_as_sf(Ecuador_plants, coords = c("Latitude","Longitude"), crs = wgs1984.proj) %>%
+  group_by(Scientific_name) %>%
+  summarize()
+
+```
+
+
 ## Load in world map
 ```{r}
 worldMap <- ne_countries(scale = "medium", type = "countries", returnclass = "sf")
+
 # country subset. In this case we are removing the Galapagos by defining the bounding box around the Ecuador polygon.
-CRpoly <- worldMap %>% filter(sovereignt == "Ecuador")
-ecuador_shp <-st_crop(CRpoly, c(xmin=-84, xmax=-75.24961, ymin=-4.990625, ymax=1.455371))
+ECpoly <- worldMap %>% filter(sovereignt == "Ecuador")
+# remove galapagos islands for simplicity
+ECpoly <-st_crop(ECpoly, c(xmin=-84, xmax=-75.24961, ymin=-4.990625, ymax=1.455371))
+
 # trim the map to appropriate study area. This zooms out of Ecuador, which will be easier for visualization down the line.
-limsCR <- st_buffer(ecuador_shp, dist = 1) %>% st_bbox()
+limsEC <- st_buffer(ECpoly, dist = 1) %>% st_bbox()
+
+# neighboring countries
+adjacentPolys <- st_touches(ECpoly, worldMap)
+neighbors <- worldMap %>% slice(pluck(adjacentPolys, 1))
+
 # countries
 divpolPlot <-
 ggplot() +
-geom_sf(data = ecuador_shp) +
+geom_sf(data = neighbors, color = "white") +
+geom_sf(data = ECpoly) +
 coord_sf(
-xlim = c(limsCR["xmin"], limsCR["xmax"]),
-ylim = c(limsCR["ymin"], limsCR["ymax"])
+xlim = c(limsEC["xmin"], limsEC["xmax"]),
+ylim = c(limsEC["ymin"], limsEC["ymax"])
 ) +
 scale_x_continuous(breaks = c(-84)) +
 theme(
@@ -61,12 +87,36 @@ rect = element_blank()
 divpolPlot
 ```
 
+## Plot points
+```{r}
+# plot points
+spPointsPlot <-
+  ggplot() +
+  geom_sf(data = neighbors, color = "white") +
+  geom_sf(data = ECpoly) +
+  geom_sf(data = Ecuador_plants_sf, pch = 21) +
+  scale_fill_scico_d(palette = "davos", direction = -1, end = 0.9) +
+  coord_sf(
+    xlim = c(limsCR["xmin"], limsCR["xmax"]),
+    ylim = c(limsCR["ymin"], limsCR["ymax"])
+  ) +
+  scale_x_continuous(breaks = c(-84)) +
+  theme(
+    plot.background = element_rect(fill = "#f1f2f3"),
+    panel.background = element_rect(fill = "#2F4051"),
+    panel.grid = element_blank(),
+    line = element_blank(),
+    rect = element_blank()
+  )
+spPointsPlot
+```
+
 ## Plot hulls
 ```{r}
 hullsPlot <-
 ggplot() +
 geom_sf(data = ecuador_shp) +
-geom_sf(data = Ecuador_plants, aes(fill = species), alpha = 0.7) +
+geom_sf(data = Ecuador_plants, aes(fill = Scientific_name), alpha = 0.7) +
 scale_fill_scico_d(palette = "davos", direction = -1, end = 0.9, guide = FALSE) +
 coord_sf(
 xlim = c(limsCR["xmin"], limsCR["xmax"]),
@@ -94,9 +144,9 @@ mutate(cellid = row_number())
 ```
 
 ## Richness for convex hulls
-```{r}
+```{r, warning=FALSE}
 richness_gridEOO <- CRGrid %>%
-st_join(Ecuador_plants) %>%
+st_join(Ecuador_plants_sf) %>%
 mutate(overlap = ifelse(!is.na(id), 1, 0)) %>%
 group_by(cellid) %>%
 summarize(num_species = sum(overlap))
