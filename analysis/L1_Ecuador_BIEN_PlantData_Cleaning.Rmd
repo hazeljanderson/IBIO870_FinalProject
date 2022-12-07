@@ -134,14 +134,12 @@ report
 
 ```{r}
 # Figures
-figures <-
 bdc_create_figures(data = check_pf,
                    database_id = "database_id",
                    workflow_step = "prefilter",
                    save_figures = FALSE)
 
-# Check figures using
-figures$.coordinates_country_inconsistent
+
 
 ```
 
@@ -188,14 +186,11 @@ report
 ```
 
 ```{r}
-figures <-
 bdc_create_figures(data = check_time,
                    database_id = "database_id",
                    workflow_step = "time",
                    save_figures = FALSE)
 
-# Check figures using
-figures$time_year_BAR
 ```
 
 ```{r}
@@ -286,14 +281,11 @@ report
 ```
 
 ```{r}
-figures <-
 bdc_create_figures(data = check_space,
                    database_id = "database_id",
                    workflow_step = "space",
-                   save_figures = TRUE)
+                   save_figures = FALSE)
 
-# Check figures using
-figures$.rou
 ```
 
 ```{r}
@@ -372,12 +364,34 @@ output <- format_bdvis(output, Latitude = "decimalLatitude", Longitude = "decima
 bdsummary(output)
 ```
 
+```{r}
+bdcalendarheat(output)
+```
+
+```{r}
+getcellid(output)
+bdcomplete(output)
+```
+
+```{r}
+distrigraph(output, ptype = "species")
+distrigraph(output, ptype = "efforts")
+distrigraph(output, ptype = "cell")
+distrigraph(output, ptype = "effortspecies")
+```
+
+```{r}
+mapgrid(output, ptype = "species", region = "Ecuador")
+```
+
+
 # Subset data for use in L2 analysis
 ```{r}
-#
-output_withElevation<-subset(output, output$verbatimElevation != "NA",)
 # remove columns not needed for analysis
-output <- output[ , c("scientificName", "decimalLatitude", "decimalLongitude", "verbatimEventDate", "year", "vertbatimElevation")]
+output <- subset(output, select = c('Scientific_name', "Latitude", "Longitude", "Date_collected", "year", "verbatimElevation"))
+
+# subset of data with elevation information
+output_withElevation <-subset(output, output$verbatimElevation != "NA",)
 ```
 
 # Save output data to csv
