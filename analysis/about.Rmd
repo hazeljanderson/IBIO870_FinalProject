@@ -7,4 +7,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-Describe your project.
+This project aims to examine patterns of plant species richness in Ecuador with sampling bias, elevation, and spatial autocorrelation at multiple spatial scales.
+
+To learn more about me and my research visit [my website](www.hazeljanderson.com).
