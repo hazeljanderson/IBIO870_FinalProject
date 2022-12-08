@@ -40,14 +40,10 @@ Modified from https://github.com/bioXgeo/neotropical_plants/blob/master/archive/
 # This defines the CRS for the US in WGS 1984 (world geographic 1984). 
 wgs1984.proj <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 
-# Reference the columns with "lon" and "lat" to make a spatial points dataframe
-Ecuador_plants_points <- SpatialPoints(coords=Ecuador_plants[,c(3,4)], proj4string=wgs1984.proj)
-
 # convert to sf
-Ecuador_plants_sf <- st_as_sf(Ecuador_plants, coords = c("Latitude","Longitude"), crs = wgs1984.proj) %>%
-  group_by(Scientific_name) %>%
-  summarize()
-
+Ecuador_plants_sf <- st_as_sf(Ecuador_plants, coords = c("Latitude","Longitude"))
+Ecuador_plants_sf <- st_set_crs(Ecuador_plants_sf, 4326) 
+head(Ecuador_plants_sf)
 ```
 
 
@@ -94,11 +90,11 @@ spPointsPlot <-
   ggplot() +
   geom_sf(data = neighbors, color = "white") +
   geom_sf(data = ECpoly) +
-  geom_sf(data = Ecuador_plants_sf, pch = 21) +
+  geom_sf(data = Ecuador_plants_sf, aes(fill = Scientific_name),pch = 21) +
   scale_fill_scico_d(palette = "davos", direction = -1, end = 0.9) +
   coord_sf(
-    xlim = c(limsCR["xmin"], limsCR["xmax"]),
-    ylim = c(limsCR["ymin"], limsCR["ymax"])
+    xlim = c(limsEC["xmin"], limsEC["xmax"]),
+    ylim = c(limsEC["ymin"], limsEC["ymax"])
   ) +
   scale_x_continuous(breaks = c(-84)) +
   theme(
@@ -115,12 +111,12 @@ spPointsPlot
 ```{r}
 hullsPlot <-
 ggplot() +
-geom_sf(data = ecuador_shp) +
+geom_sf(data = ECpoly) +
 geom_sf(data = Ecuador_plants, aes(fill = Scientific_name), alpha = 0.7) +
 scale_fill_scico_d(palette = "davos", direction = -1, end = 0.9, guide = FALSE) +
 coord_sf(
-xlim = c(limsCR["xmin"], limsCR["xmax"]),
-ylim = c(limsCR["ymin"], limsCR["ymax"])
+xlim = c(limsEC["xmin"], limsEC["xmax"]),
+ylim = c(limsEC["ymin"], limsEC["ymax"])
 ) +
 scale_x_continuous(breaks = c(-84)) +
 theme(
