@@ -311,16 +311,19 @@ database <- dplyr::bind_cols(database, parse_names)
 ```
 
 ```{r}
-query_names <- bdc_query_names_taxadb(
-  sci_name            = database$names_clean,
-  replace_synonyms    = TRUE, # replace synonyms by accepted names?
-  suggest_names       = TRUE, # try to found a candidate name for misspelled names?
-  suggestion_distance = 0.9, # distance between the searched and suggested names
-  db                  = "gbif", # taxonomic database
-  parallel            = TRUE, # should parallel processing be used?
-  ncores              = 4, # number of cores to be used in the parallelization process
-  export_accepted     = FALSE # save names linked to multiple accepted names
-)
+#not run for knit version - error with database
+#query_names <- bdc_query_names_taxadb(
+#  sci_name            = database$names_clean,
+#  replace_synonyms    = TRUE, # replace synonyms by accepted names?
+#  suggest_names       = TRUE, # try to found a candidate name for misspelled names?
+#  suggestion_distance = 0.9, # distance between the searched and suggested names
+#  db                  = "gbif", # taxonomic database
+#  parallel            = TRUE, # should parallel processing be used?
+#  ncores              = 8, # number of cores to be used in the parallelization process
+#  export_accepted     = TRUE # save names linked to multiple accepted names
+#)
+#save(query_names, file = "~analysis/query_names.Rdata")
+load("~analysis/query_names.Rdata")
 ```
 
 ```{r}
@@ -368,8 +371,11 @@ bdsummary(output)
 bdcalendarheat(output)
 ```
 
-```{r}
+```{r, include=FALSE}
 getcellid(output)
+```
+
+```{r}
 bdcomplete(output)
 ```
 
