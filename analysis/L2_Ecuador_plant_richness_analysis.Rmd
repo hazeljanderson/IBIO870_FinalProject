@@ -4,7 +4,11 @@ authors: "Hazel J. Anderson"
 data input: "Ecuador_BIEN_plant_cleaned.csv"
 data output: ""
 date: "2022-11-30"
-output: html_document
+output: 
+  html_document: 
+    fig_width: 10
+    fig_height: 10
+    fig_caption: yes
 ---
 
 # Set file paths
@@ -25,6 +29,8 @@ library(purrr)
 library(ggsn)
 library(fasterize)
 library(raster)
+library(smoothr)
+library(sampbias)
 ```
 
 # Load cleaned BIEN data
@@ -37,45 +43,50 @@ Modified from https://github.com/bioXgeo/neotropical_plants/blob/master/archive/
 
 ## Convert data into sf object
 ```{r}
-# This defines the CRS for the US in WGS 1984 (world geographic 1984). 
-wgs1984.proj <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+Ecuador_plants$species <- Ecuador_plants$Scientific_name
+
+# species and lat long data
+Ecuador_plants <- Ecuador_plants %>%
+  dplyr::select(species, Longitude, Latitude) %>%
+  na.omit()
 
 # convert to sf
-Ecuador_plants_sf <- st_as_sf(Ecuador_plants, coords = c("Latitude","Longitude"))
-Ecuador_plants_sf <- st_set_crs(Ecuador_plants_sf, 4326) 
-head(Ecuador_plants_sf)
+Ecuador_plants_sf <- st_as_sf(Ecuador_plants, coords = c("Longitude", "Latitude"), crs = 32617) %>%
+  group_by(species) %>%
+  summarize()
+Ecuador_plants_sf <- st_transform(Ecuador_plants_sf, value = 32617)
 ```
-
 
 ## Load in world map
 ```{r}
+
 worldMap <- ne_countries(scale = "medium", type = "countries", returnclass = "sf")
-
-# country subset. In this case we are removing the Galapagos by defining the bounding box around the Ecuador polygon.
+worldMap <- st_transform(worldMap, crs = 32617)
+# country subset
 ECpoly <- worldMap %>% filter(sovereignt == "Ecuador")
-# remove galapagos islands for simplicity
-ECpoly <-st_crop(ECpoly, c(xmin=-84, xmax=-75.24961, ymin=-4.990625, ymax=1.455371))
-
-# trim the map to appropriate study area. This zooms out of Ecuador, which will be easier for visualization down the line.
-limsEC <- st_buffer(ECpoly, dist = 1) %>% st_bbox()
+ECpoly <- st_transform(ECpoly, crs = 32617)
+# trim the map to appropriate study area.
+limsEC <- st_buffer(ECpoly, dist = 0.7) %>% st_bbox()
 
 # neighboring countries
-adjacentPolys <- st_touches(ECpoly, worldMap)
-neighbors <- worldMap %>% slice(pluck(adjacentPolys, 1))
+COpoly <- worldMap %>% filter(sovereignt == "Colombia")
+COpoly <- st_transform(COpoly, crs = 32617)
+PEpoly <- worldMap %>% filter(sovereignt == "Peru")
+PEpoly <- st_transform(PEpoly, crs = 32617)
 
-# countries
+
 divpolPlot <-
 ggplot() +
-geom_sf(data = neighbors, color = "white") +
+geom_sf(data = COpoly, color = "white") +
+geom_sf(data = PEpoly, color = "white") +
 geom_sf(data = ECpoly) +
 coord_sf(
 xlim = c(limsEC["xmin"], limsEC["xmax"]),
 ylim = c(limsEC["ymin"], limsEC["ymax"])
 ) +
-scale_x_continuous(breaks = c(-84)) +
 theme(
-plot.background = element_rect(fill = "#ffffff"),
-panel.background = element_rect(fill = "#ffffff"),
+plot.background = element_rect(fill = "#f1f2f3"),
+panel.background = element_rect(fill = "#2F4051"),
 panel.grid = element_blank(),
 line = element_blank(),
 rect = element_blank()
@@ -85,18 +96,16 @@ divpolPlot
 
 ## Plot points
 ```{r}
-# plot points
-spPointsPlot <-
+plantPointsPlot <-
   ggplot() +
-  geom_sf(data = neighbors, color = "white") +
+  geom_sf(data = COpoly, color = "white") +
+  geom_sf(data = PEpoly, color = "white") +
   geom_sf(data = ECpoly) +
-  geom_sf(data = Ecuador_plants_sf, aes(fill = Scientific_name),pch = 21) +
-  scale_fill_scico_d(palette = "davos", direction = -1, end = 0.9) +
+  geom_sf(data = Ecuador_plants_sf, pch = 12) +
   coord_sf(
     xlim = c(limsEC["xmin"], limsEC["xmax"]),
     ylim = c(limsEC["ymin"], limsEC["ymax"])
   ) +
-  scale_x_continuous(breaks = c(-84)) +
   theme(
     plot.background = element_rect(fill = "#f1f2f3"),
     panel.background = element_rect(fill = "#2F4051"),
@@ -104,96 +113,72 @@ spPointsPlot <-
     line = element_blank(),
     rect = element_blank()
   )
-spPointsPlot
+plantPointsPlot
 ```
 
-## Plot hulls
 ```{r}
-hullsPlot <-
-ggplot() +
-geom_sf(data = ECpoly) +
-geom_sf(data = Ecuador_plants, aes(fill = Scientific_name), alpha = 0.7) +
-scale_fill_scico_d(palette = "davos", direction = -1, end = 0.9, guide = FALSE) +
-coord_sf(
-xlim = c(limsEC["xmin"], limsEC["xmax"]),
-ylim = c(limsEC["ymin"], limsEC["ymax"])
-) +
-scale_x_continuous(breaks = c(-84)) +
-theme(
-plot.background = element_rect(fill = "#FFFFFF"),
-panel.background = element_rect(fill = "#FFFFFF"),
-panel.grid = element_blank(),
-line = element_blank(),
-rect = element_blank()
-)
-hullsPlot
+plantPointsPlot <-
+  ggplot() +
+  geom_sf(data = Ecuador_plants_sf, pch = 21) 
+plantPointsPlot
 ```
 
 ## Define a grid
 ```{r}
-CRGrid <- ecuador_shp %>%
+ECGrid <- ECpoly %>%
 st_make_grid(cellsize = 0.2) %>%
-st_intersection(ecuador_shp) %>%
+st_intersection(ECpoly) %>%
 st_cast("MULTIPOLYGON") %>%
 st_sf() %>%
 mutate(cellid = row_number())
-```
 
-## Richness for convex hulls
-```{r, warning=FALSE}
-richness_gridEOO <- CRGrid %>%
-st_join(Ecuador_plants_sf) %>%
-mutate(overlap = ifelse(!is.na(id), 1, 0)) %>%
-group_by(cellid) %>%
-summarize(num_species = sum(overlap))
-```
-
-## Empty grid, more detailed in nature
-```{r}
 gridPlot <-
-ggplot() +
-geom_sf(data =ecuador_shp) +
-geom_sf(data = CRGrid) +
-coord_sf(
-xlim = c(limsCR["xmin"], limsCR["xmax"]),
-ylim = c(limsCR["ymin"], limsCR["ymax"])
-) +
-scale_x_continuous(breaks = c(-84)) +
-theme(
-plot.background = element_rect(fill = "#FFFFFF"),
-panel.background = element_rect(fill = "#FFFFFF"),
-panel.grid = element_blank(),
-line = element_blank(),
-rect = element_blank()
-)
+  ggplot() +
+  geom_sf(data = neighbors, color = "white") +
+  geom_sf(data = ECpoly) +
+  geom_sf(data = ECGrid) +
+  coord_sf(
+    xlim = c(limsEC["xmin"], limsEC["xmax"]),
+    ylim = c(limsEC["ymin"], limsEC["ymax"])
+  ) +
+  theme(
+    plot.background = element_rect(fill = "#f1f2f3"),
+    panel.background = element_rect(fill = "#2F4051"),
+    panel.grid = element_blank(),
+    line = element_blank(),
+    rect = element_blank()
+  )
 gridPlot
 ```
 
-## Richness for convex hulls, more detailed
+## Richness 
 ```{r}
-gridRichCR_eoo <-
-ggplot(richness_gridEOO) +
-geom_sf(data = ecuador_shp, fill = "grey", size = 0.1) +
-geom_sf(aes(fill = num_species), color = NA) +
-scale_fill_scico(palette = "davos", direction = -1, end = 0.9) +
-coord_sf(
-xlim = c(limsCR["xmin"], limsCR["xmax"]),
-ylim = c(limsCR["ymin"], limsCR["ymax"])
-) +
-scale_x_continuous(breaks = c(-84)) +
-theme(
-plot.background = element_rect(fill = "#FFFFFF"),
-panel.background = element_rect(fill = "#FFFFFF"),
-panel.grid = element_blank(),
-line = element_blank(),
-rect = element_blank(),
-axis.title.x = element_blank(),
-axis.title.y = element_blank()
-) + 
-scalebar(ecuador_shp, dist = 200, st.dist=.05, st.size=4, height=0.02, transform = TRUE, dist_unit = "km", model = 'WGS84') +
-north(ecuador_shp, location="topright", scale=0.15, symbol=3) +
-labs(fill = "richness") 
-gridRichCR_eoo
+plant_richness_grid <- ECGrid %>%
+  st_join(Ecuador_plants_sf) %>%
+  mutate(overlap = ifelse(!is.na(species), 1, 0)) %>%
+  group_by(cellid) %>%
+  summarize(num_species = sum(overlap))
+
+# plot
+plantRichEC <-
+  ggplot(plant_richness_grid) +
+  geom_sf(data = neighbors, color = "white") +
+  geom_sf(data = ECpoly, fill = "grey", size = 0.1) +
+  geom_sf(aes(fill = num_species), color = NA) +
+  scale_fill_scico(palette = "davos", direction = -1, end = 0.9, name = "Plant species richness") +
+  coord_sf(
+    xlim = c(limsEC["xmin"], limsEC["xmax"]),
+    ylim = c(limsEC["ymin"], limsEC["ymax"])
+  ) +
+  theme(
+    plot.background = element_rect(fill = "#f1f2f3"),
+    panel.background = element_rect(fill = "#2F4051"),
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    line = element_blank(),
+    rect = element_blank()
+  ) + labs(fill = "richness")
+plantRichEC
 ```
 
 ## Saving richness map
@@ -201,17 +186,9 @@ gridRichCR_eoo
 ggsave(filename = "Plant richness map Ecuador.png", dpi = 300, device="png")
 ```
 
-## Convert map into raster
+
+# Calculate sample bias
 ```{r}
-# Run fasterize to turn the richness map into a raster 
-raster_grid <- fasterize(
-  richness_gridEOO,
-  for_cov,
-  field = "num_species",
-  fun = "sum",
-  background = NA,
-)
-#Write the richness raster to a file 
-writeRaster(raster_grid, filename=filepath(output_path,"plant_ric.tif"), format="GTiff")
+
 ```
 
