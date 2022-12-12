@@ -287,5 +287,3 @@ qqline(plant_richness_grid2$num_species,col="green")
 ```
 
 Can't do a Moran's I test because the data is not normally distributed which is an assumption of Moran's I.
-
-wflow_publish("analysis/L2_Ecuador_plant_richness_analysis.Rmd", message = "Analyze richness")
