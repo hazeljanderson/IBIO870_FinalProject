@@ -323,7 +323,7 @@ database <- dplyr::bind_cols(database, parse_names)
 #  export_accepted     = TRUE # save names linked to multiple accepted names
 #)
 #save(query_names, file = "~analysis/query_names.Rdata")
-load("~analysis/query_names.Rdata")
+load(file.path(output_path,"query_names.Rdata"))
 ```
 
 ```{r}
