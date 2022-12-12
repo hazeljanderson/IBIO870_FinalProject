@@ -375,7 +375,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -386,8 +386,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -400,9 +400,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>IBIO870_FinalProject/</code>
@@ -425,21 +425,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -530,15 +527,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomhazeljandersonIBIO870FinalProjecttree692bc374a678dc0fe8243f21a0af03f83e5ea2d8targetblank692bc37a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomhazeljandersonIBIO870FinalProjecttree86a5f47f9e8d1a907dc4179ef8a560dde94b8cf1targetblank86a5f47a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/tree/692bc374a678dc0fe8243f21a0af03f83e5ea2d8" target="_blank">692bc37</a>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/tree/86a5f47f9e8d1a907dc4179ef8a560dde94b8cf1" target="_blank">86a5f47</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomhazeljandersonIBIO870FinalProjecttree692bc374a678dc0fe8243f21a0af03f83e5ea2d8targetblank692bc37a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomhazeljandersonIBIO870FinalProjecttree86a5f47f9e8d1a907dc4179ef8a560dde94b8cf1targetblank86a5f47a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -548,7 +545,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/tree/692bc374a678dc0fe8243f21a0af03f83e5ea2d8" target="_blank">692bc37</a>.
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/tree/86a5f47f9e8d1a907dc4179ef8a560dde94b8cf1" target="_blank">86a5f47</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -570,7 +567,13 @@ Ignored files:
     Ignored:    Richness plot raw data.png
 
 Unstaged changes:
-    Modified:   analysis/L1_Ecuador_BIEN_PlantData_Cleaning.Rmd
+    Deleted:    analysis/Richness plot cleaned data.png
+    Deleted:    analysis/Richness plot raw data.png
+    Deleted:    analysis/figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-5-1.png
+    Deleted:    analysis/figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-6-1.png
+    Deleted:    analysis/figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-7-1.png
+    Deleted:    analysis/figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-8-1.png
+    Deleted:    analysis/query_names.Rdata
 
 </code></pre>
 <p>
@@ -617,6 +620,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/blob/5651451326525a1b07e32218bd14b3cfcfaab56f/analysis/L1_Ecuador_BIEN_PlantData_Cleaning.Rmd" target="_blank">5651451</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-11
+</td>
+<td>
+update workflowr website
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/hazeljanderson/IBIO870_FinalProject/5651451326525a1b07e32218bd14b3cfcfaab56f/docs/L1_Ecuador_BIEN_PlantData_Cleaning.html" target="_blank">5651451</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-11
+</td>
+<td>
+update workflowr website
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1052,7 +1089,7 @@ One column was added to the database.</code></pre>
 <pre><code>Testing urban areas</code></pre>
 <pre><code>Downloading urban areas via rnaturalearth</code></pre>
 <pre><code>OGR data source with driver: ESRI Shapefile 
-Source: &quot;C:\Users\hj152\AppData\Local\Temp\RtmpSKOTHN&quot;, layer: &quot;ne_50m_urban_areas&quot;
+Source: &quot;C:\Users\hj152\AppData\Local\Temp\RtmpIn0gb0&quot;, layer: &quot;ne_50m_urban_areas&quot;
 with 2143 features
 It has 4 fields
 Integer64 fields read as strings:  scalerank </code></pre>
@@ -1303,18 +1340,19 @@ other attached packages:
  [7] DT_0.26                 readr_2.1.3             rangeBuilder_2.0       
 [10] countrycode_1.4.0       rnaturalearthdata_0.1.0 rnaturalearth_0.1.0    
 [13] bdvis_0.2.33            bdDwC_0.1.15            bdc_1.1.2              
+[16] workflowr_1.7.0        
 
 loaded via a namespace (and not attached):
-  [1] spam_2.9-1               uuid_1.1-0               workflowr_1.7.0         
-  [4] igraph_1.3.5             plyr_1.8.8               lazyeval_0.2.2          
-  [7] shinydashboard_0.7.2     crosstalk_1.2.0          RApiSerialize_0.1.2     
- [10] gridBase_0.4-7           digest_0.6.30            foreach_1.5.2           
- [13] htmltools_0.5.4          viridis_0.6.2            fansi_1.0.3             
- [16] magrittr_2.0.3           memoise_2.0.1            tzdb_0.3.0              
- [19] shinyFiles_0.9.3         RcppParallel_5.1.5       vroom_1.6.0             
- [22] askpass_1.1              prettyunits_1.1.1        colorspace_2.0-3        
- [25] blob_1.2.3               treemap_2.4-3            xfun_0.35               
- [28] dplyr_1.0.10             rgdal_1.6-2              tcltk_4.2.2             
+  [1] spam_2.9-1               uuid_1.1-0               igraph_1.3.5            
+  [4] plyr_1.8.8               lazyeval_0.2.2           shinydashboard_0.7.2    
+  [7] crosstalk_1.2.0          RApiSerialize_0.1.2      gridBase_0.4-7          
+ [10] digest_0.6.30            foreach_1.5.2            htmltools_0.5.4         
+ [13] viridis_0.6.2            fansi_1.0.3              magrittr_2.0.3          
+ [16] memoise_2.0.1            tzdb_0.3.0               shinyFiles_0.9.3        
+ [19] RcppParallel_5.1.5       vroom_1.6.0              askpass_1.1             
+ [22] prettyunits_1.1.1        colorspace_2.0-3         treemap_2.4-3           
+ [25] blob_1.2.3               xfun_0.35                dplyr_1.0.10            
+ [28] rgdal_1.6-2              tcltk_4.2.2              callr_3.7.3             
  [31] crayon_1.5.2             jsonlite_1.8.4           stringfish_0.15.7       
  [34] zoo_1.8-11               iterators_1.0.14         ape_5.6-2               
  [37] glue_1.6.2               gtable_0.3.1             maps_3.4.1              
@@ -1334,25 +1372,26 @@ loaded via a namespace (and not attached):
  [79] cachem_1.0.6             cli_3.4.1                gsubfn_0.7              
  [82] generics_0.1.3           evaluate_0.18            shinyBS_0.61.1          
  [85] stringr_1.5.0            fastmap_1.1.0            yaml_2.3.6              
- [88] sys_3.4.1                knitr_1.41               bit64_4.0.5             
- [91] fs_1.5.2                 purrr_0.3.5              pbapply_1.6-0           
- [94] nlme_3.1-160             whisker_0.4.1            mime_0.12               
- [97] taxize_0.9.100           xml2_1.3.3               compiler_4.2.2          
-[100] rstudioapi_0.14          curl_4.3.3               e1071_1.7-12            
-[103] tibble_3.1.8             bslib_0.4.1              stringi_1.7.8           
-[106] highr_0.9                fields_14.1              rgeos_0.5-9             
-[109] lattice_0.20-45          rgnparser_0.2.5.91       rnaturalearthhires_0.2.0
-[112] classInt_0.4-8           shinyjs_2.1.0            vctrs_0.5.1             
-[115] pillar_1.8.1             lifecycle_1.0.3          jquerylib_0.1.4         
-[118] maptools_1.1-5           data.table_1.14.6        raster_3.6-11           
-[121] httpuv_1.6.6             R6_2.5.1                 qs_0.25.4               
-[124] promises_1.2.0.1         gridExtra_2.3            KernSmooth_2.23-20      
-[127] codetools_0.2-18         assertthat_0.2.1         chron_2.3-58            
-[130] proto_1.0.0              openssl_2.0.5            CoordinateCleaner_2.0-20
-[133] rprojroot_2.0.3          withr_2.5.0              httpcode_0.3.0          
-[136] parallel_4.2.2           hms_1.1.2                terra_1.6-47            
-[139] grid_4.2.2               class_7.3-20             rmarkdown_2.18          
-[142] git2r_0.30.1             sf_1.0-9                 shiny_1.7.3             </code></pre>
+ [88] sys_3.4.1                processx_3.8.0           knitr_1.41              
+ [91] bit64_4.0.5              fs_1.5.2                 purrr_0.3.5             
+ [94] pbapply_1.6-0            nlme_3.1-160             whisker_0.4.1           
+ [97] mime_0.12                taxize_0.9.100           xml2_1.3.3              
+[100] compiler_4.2.2           rstudioapi_0.14          curl_4.3.3              
+[103] e1071_1.7-12             tibble_3.1.8             bslib_0.4.1             
+[106] stringi_1.7.8            highr_0.9                ps_1.7.2                
+[109] fields_14.1              rgeos_0.5-9              lattice_0.20-45         
+[112] rgnparser_0.2.5.91       rnaturalearthhires_0.2.0 classInt_0.4-8          
+[115] shinyjs_2.1.0            vctrs_0.5.1              pillar_1.8.1            
+[118] lifecycle_1.0.3          jquerylib_0.1.4          maptools_1.1-5          
+[121] data.table_1.14.6        raster_3.6-11            httpuv_1.6.6            
+[124] R6_2.5.1                 qs_0.25.4                promises_1.2.0.1        
+[127] gridExtra_2.3            KernSmooth_2.23-20       codetools_0.2-18        
+[130] assertthat_0.2.1         chron_2.3-58             proto_1.0.0             
+[133] openssl_2.0.5            CoordinateCleaner_2.0-20 rprojroot_2.0.3         
+[136] withr_2.5.0              httpcode_0.3.0           parallel_4.2.2          
+[139] hms_1.1.2                terra_1.6-47             grid_4.2.2              
+[142] class_7.3-20             rmarkdown_2.18           git2r_0.30.1            
+[145] sf_1.0-9                 getPass_0.2-2            shiny_1.7.3             </code></pre>
 </div>
 </div>
 
