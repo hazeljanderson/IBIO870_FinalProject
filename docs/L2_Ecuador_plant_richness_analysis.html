@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2022-11-30" />
+
+<title>Ecuador plant richness analysis</title>
+
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">IBIO870_FinalProject</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/hazeljanderson/IBIO870_FinalProject">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Ecuador plant richness analysis</h1>
+<h4 class="date">2022-11-30</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-12-11
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>IBIO870_FinalProject/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20221207code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20221207)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20221207code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20221207)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomhazeljandersonIBIO870FinalProjecttree634e583c66c817f066894826521370f2821493datargetblank634e583a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/tree/634e583c66c817f066894826521370f2821493da" target="_blank">634e583</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomhazeljandersonIBIO870FinalProjecttree634e583c66c817f066894826521370f2821493datargetblank634e583a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/tree/634e583c66c817f066894826521370f2821493da" target="_blank">634e583</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    Output/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/L2_Ecuador_plant_richness_analysis.Rmd</code>) and HTML
+(<code>docs/L2_Ecuador_plant_richness_analysis.html</code>) files. If
+you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table
+below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/blob/634e583c66c817f066894826521370f2821493da/analysis/L2_Ecuador_plant_richness_analysis.Rmd" target="_blank">634e583</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-11
+</td>
+<td>
+Analyze richness
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/blob/52254744004635b5b2d50fc95a65c3bb78d6d724/analysis/L2_Ecuador_plant_richness_analysis.Rmd" target="_blank">5225474</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-11
+</td>
+<td>
+richness maps for both cleaned and raw data
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/blob/45cad147d8aa9b21559b484192713cf6e685e637/analysis/L2_Ecuador_plant_richness_analysis.Rmd" target="_blank">45cad14</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-11
+</td>
+<td>
+try utm crs
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/blob/f89837c8e658dd00afaaac8dfb876371de21b675/analysis/L2_Ecuador_plant_richness_analysis.Rmd" target="_blank">f89837c</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-07
+</td>
+<td>
+fixing issues converting input data to sf for analysis
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/blob/0f2d1456e1233188e642069f7b0ac86804f911da/analysis/L2_Ecuador_plant_richness_analysis.Rmd" target="_blank">0f2d145</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-07
+</td>
+<td>
+convert data to sf object for analysis and richness calculation
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/hazeljanderson/IBIO870_FinalProject/blob/5f91a6aa29e077bf91a83192526c1e1ec9483cbd/analysis/L2_Ecuador_plant_richness_analysis.Rmd" target="_blank">5f91a6a</a>
+</td>
+<td>
+Hazel J. Anderson
+</td>
+<td>
+2022-12-07
+</td>
+<td>
+convert file structure
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-file-paths" class="section level1">
+<h1>Set file paths</h1>
+<pre class="r"><code>data_path &lt;- file.path(&#39;G:/My Drive/IBIO 870/Final project/data/L1&#39;)
+output_path &lt;- file.path(&#39;G:/My Drive/IBIO 870/Final project/data/L2&#39;)</code></pre>
+</div>
+<div id="load-required-packages" class="section level1">
+<h1>Load required packages</h1>
+<pre class="r"><code>library(sp)
+library(sf)</code></pre>
+<pre><code>Linking to GEOS 3.9.3, GDAL 3.5.2, PROJ 8.2.1; sf_use_s2() is TRUE</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>
+Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:stats&#39;:
+
+    filter, lag</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(scico)
+library(rnaturalearth)
+library(purrr)
+library(ggsn)</code></pre>
+<pre><code>Loading required package: grid</code></pre>
+<pre class="r"><code>library(fasterize)</code></pre>
+<pre><code>
+Attaching package: &#39;fasterize&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:graphics&#39;:
+
+    plot</code></pre>
+<pre><code>The following object is masked from &#39;package:base&#39;:
+
+    plot</code></pre>
+<pre class="r"><code>library(raster)</code></pre>
+<pre><code>
+Attaching package: &#39;raster&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:ggsn&#39;:
+
+    scalebar</code></pre>
+<pre><code>The following object is masked from &#39;package:dplyr&#39;:
+
+    select</code></pre>
+<pre class="r"><code>library(smoothr)</code></pre>
+<pre><code>
+Attaching package: &#39;smoothr&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:stats&#39;:
+
+    smooth</code></pre>
+<pre class="r"><code>library(gstat)</code></pre>
+</div>
+<div id="load-cleaned-bien-data" class="section level1">
+<h1>Load cleaned BIEN data</h1>
+<pre class="r"><code>Ecuador_plants &lt;- read.csv(file.path(data_path,&quot;Ecuador_BIEN_plant_cleaned.csv&quot;))</code></pre>
+</div>
+<div id="calculate-richness" class="section level1">
+<h1>Calculate richness</h1>
+<p>Modified from <a
+href="https://github.com/bioXgeo/neotropical_plants/blob/master/archive/EcuadorPlantsStackedSpeciesMaps.Rmd"
+class="uri">https://github.com/bioXgeo/neotropical_plants/blob/master/archive/EcuadorPlantsStackedSpeciesMaps.Rmd</a>
+&amp; <a href="https://luisdva.github.io/rstats/richness/"
+class="uri">https://luisdva.github.io/rstats/richness/</a></p>
+<div id="convert-data-into-sf-object" class="section level2">
+<h2>Convert data into sf object</h2>
+<pre class="r"><code>Ecuador_plants$species &lt;- Ecuador_plants$Scientific_name
+
+# species and lat long data
+Ecuador_plants &lt;- Ecuador_plants %&gt;%
+  dplyr::select(species, Longitude, Latitude) %&gt;%
+  na.omit()
+
+# convert to sf
+Ecuador_plants_sf &lt;- st_as_sf(Ecuador_plants, coords = c(&quot;Longitude&quot;, &quot;Latitude&quot;), crs = 4326) %&gt;%
+  group_by(species) %&gt;%
+  summarize()</code></pre>
+</div>
+<div id="load-in-world-map" class="section level2">
+<h2>Load in world map</h2>
+<pre class="r"><code>worldMap &lt;- ne_countries(scale = &quot;medium&quot;, type = &quot;countries&quot;, returnclass = &quot;sf&quot;)
+# country subset
+ECpoly &lt;- worldMap %&gt;% filter(sovereignt == &quot;Ecuador&quot;)
+
+# remove galapagos islands for simplicity
+ECpoly &lt;-st_crop(ECpoly, c(xmin=-84, xmax=-75.24961, ymin=-4.990625, ymax=1.455371))</code></pre>
+<pre><code>Warning: attribute variables are assumed to be spatially constant throughout all
+geometries</code></pre>
+<pre class="r"><code># trim the map to appropriate study area.
+limsEC &lt;- st_buffer(ECpoly, dist = 1) %&gt;% st_bbox()
+
+# neighboring countries
+COpoly &lt;- worldMap %&gt;% filter(sovereignt == &quot;Colombia&quot;)
+PEpoly &lt;- worldMap %&gt;% filter(sovereignt == &quot;Peru&quot;)
+
+
+divpolPlot &lt;-
+ggplot() +
+geom_sf(data = COpoly, color = &quot;white&quot;) +
+geom_sf(data = PEpoly, color = &quot;white&quot;) +
+geom_sf(data = ECpoly) +
+coord_sf(
+xlim = c(limsEC[&quot;xmin&quot;], limsEC[&quot;xmax&quot;]),
+ylim = c(limsEC[&quot;ymin&quot;], limsEC[&quot;ymax&quot;])
+) +
+theme(
+plot.background = element_rect(fill = &quot;#f1f2f3&quot;),
+panel.background = element_rect(fill = &quot;#2F4051&quot;),
+panel.grid = element_blank(),
+line = element_blank(),
+rect = element_blank()
+)
+divpolPlot</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="plot-points" class="section level2">
+<h2>Plot points</h2>
+<pre class="r"><code>plantPointsPlot &lt;-
+  ggplot() +
+  geom_sf(data = Ecuador_plants_sf, pch = 20) +
+  coord_sf(
+    xlim = c(limsEC[&quot;xmin&quot;], limsEC[&quot;xmax&quot;]),
+    ylim = c(limsEC[&quot;ymin&quot;], limsEC[&quot;ymax&quot;])
+  )
+plantPointsPlot</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="define-a-grid" class="section level2">
+<h2>Define a grid</h2>
+<pre class="r"><code>ECGrid &lt;- ECpoly %&gt;%
+st_make_grid(cellsize = 0.5) %&gt;%
+st_intersection(ECpoly) %&gt;%
+st_cast(&quot;MULTIPOLYGON&quot;) %&gt;%
+st_sf() %&gt;%
+mutate(cellid = row_number())
+
+gridPlot &lt;-
+  ggplot() +
+  geom_sf(data = ECpoly) +
+  geom_sf(data = COpoly, color = &quot;white&quot;) +
+  geom_sf(data = PEpoly, color = &quot;white&quot;) +
+  geom_sf(data = ECGrid) +
+  coord_sf(
+    xlim = c(limsEC[&quot;xmin&quot;], limsEC[&quot;xmax&quot;]),
+    ylim = c(limsEC[&quot;ymin&quot;], limsEC[&quot;ymax&quot;])
+  ) +
+  theme(
+    plot.background = element_rect(fill = &quot;#f1f2f3&quot;),
+    panel.background = element_rect(fill = &quot;#2F4051&quot;),
+    panel.grid = element_blank(),
+    line = element_blank(),
+    rect = element_blank()
+  )
+gridPlot</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="richness" class="section level2">
+<h2>Richness</h2>
+<pre class="r"><code>plant_richness_grid &lt;- ECGrid %&gt;%
+  st_join(Ecuador_plants_sf) %&gt;%
+  mutate(overlap = ifelse(!is.na(species), 1, 0)) %&gt;%
+  group_by(cellid) %&gt;%
+  summarize(num_species = sum(overlap))
+
+# plot
+plantRichEC &lt;-
+  ggplot(plant_richness_grid) +
+  geom_sf(data = COpoly, color = &quot;white&quot;) +
+  geom_sf(data = PEpoly, color = &quot;white&quot;) +
+  geom_sf(data = ECpoly, fill = &quot;grey&quot;, size = 0.1) +
+  geom_sf(aes(fill = num_species), color = NA) +
+  scale_fill_scico(palette = &quot;davos&quot;, direction = -1, end = 0.9, name = &quot;Plant species richness&quot;) +
+  coord_sf(
+    xlim = c(limsEC[&quot;xmin&quot;], limsEC[&quot;xmax&quot;]),
+    ylim = c(limsEC[&quot;ymin&quot;], limsEC[&quot;ymax&quot;])
+  ) +
+  theme(
+    plot.background = element_rect(fill = &quot;#f1f2f3&quot;),
+    panel.background = element_rect(fill = &quot;#2F4051&quot;),
+    panel.grid = element_blank(),
+    legend.position = &quot;bottom&quot;,
+    line = element_blank(),
+    rect = element_blank()
+  ) + labs(fill = &quot;richness&quot;)
+plantRichEC</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="saving-richness-map" class="section level2">
+<h2>Saving richness map</h2>
+<pre class="r"><code>ggsave(filename = &quot;Richness plot cleaned data.png&quot;, dpi = 300, device=&quot;png&quot;)</code></pre>
+<pre><code>Saving 7 x 5 in image</code></pre>
+</div>
+<div id="calculate-richness-with-raw-data" class="section level2">
+<h2>Calculate Richness with raw data</h2>
+<pre class="r"><code>Ecuador_plants_raw &lt;- read.csv(&quot;G:/My Drive/IBIO 870/Final project/data/L0/Ecuador_BIEN_occurrence.csv&quot;)</code></pre>
+</div>
+<div id="convert-data-into-sf-object-1" class="section level2">
+<h2>Convert data into sf object</h2>
+<pre class="r"><code># species and lat long data
+Ecuador_plants2 &lt;- Ecuador_plants_raw %&gt;%
+  dplyr::select(scrubbed_species_binomial, longitude, latitude) %&gt;%
+  na.omit()
+
+Ecuador_plants2$species &lt;- Ecuador_plants2$scrubbed_species_binomial
+
+# convert to sf
+Ecuador_plants2_sf &lt;- st_as_sf(Ecuador_plants2, coords = c(&quot;longitude&quot;, &quot;latitude&quot;), crs = 4326) %&gt;%
+  group_by(species) %&gt;%
+  summarize()</code></pre>
+</div>
+<div id="plot-points-1" class="section level2">
+<h2>Plot points</h2>
+<pre class="r"><code>plantPointsPlot &lt;-
+  ggplot() +
+  geom_sf(data = Ecuador_plants2_sf, pch = 20) +
+  coord_sf(
+    xlim = c(limsEC[&quot;xmin&quot;], limsEC[&quot;xmax&quot;]),
+    ylim = c(limsEC[&quot;ymin&quot;], limsEC[&quot;ymax&quot;])
+  )
+plantPointsPlot</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="richness-1" class="section level2">
+<h2>Richness</h2>
+<pre class="r"><code>plant_richness_grid2 &lt;- ECGrid %&gt;%
+  st_join(Ecuador_plants2_sf) %&gt;%
+  mutate(overlap = ifelse(!is.na(species), 1, 0)) %&gt;%
+  group_by(cellid) %&gt;%
+  summarize(num_species = sum(overlap))
+
+# plot
+plantRichEC &lt;-
+  ggplot(plant_richness_grid2) +
+  geom_sf(data = COpoly, color = &quot;white&quot;) +
+  geom_sf(data = PEpoly, color = &quot;white&quot;) +
+  geom_sf(data = ECpoly, fill = &quot;grey&quot;, size = 0.1) +
+  geom_sf(aes(fill = num_species), color = NA) +
+  scale_fill_scico(palette = &quot;davos&quot;, direction = -1, end = 0.9, name = &quot;Plant species richness&quot;) +
+  coord_sf(
+    xlim = c(limsEC[&quot;xmin&quot;], limsEC[&quot;xmax&quot;]),
+    ylim = c(limsEC[&quot;ymin&quot;], limsEC[&quot;ymax&quot;])
+  ) +
+  theme(
+    plot.background = element_rect(fill = &quot;#f1f2f3&quot;),
+    panel.background = element_rect(fill = &quot;#2F4051&quot;),
+    panel.grid = element_blank(),
+    legend.position = &quot;bottom&quot;,
+    line = element_blank(),
+    rect = element_blank()
+  ) + labs(fill = &quot;richness&quot;)
+plantRichEC</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="saving-richness-map-1" class="section level2">
+<h2>Saving richness map</h2>
+<pre class="r"><code>ggsave(filename = &quot;Richness plot raw data.png&quot;, dpi = 300, device=&quot;png&quot;)</code></pre>
+<pre><code>Saving 7 x 5 in image</code></pre>
+</div>
+</div>
+<div id="variograms-morans-i" class="section level1">
+<h1>Variograms &amp; Moran’s I</h1>
+<p>Modified from <a
+href="https://rstudio-pubs-static.s3.amazonaws.com/278910_3ebade4ad6a14f8f9ac6e05eb16b5a21.html"
+class="uri">https://rstudio-pubs-static.s3.amazonaws.com/278910_3ebade4ad6a14f8f9ac6e05eb16b5a21.html</a>
+&amp; <a
+href="https://space-lab-msu.github.io/MSUGradSpatialEcology/lab4_autocorrelation.html"
+class="uri">https://space-lab-msu.github.io/MSUGradSpatialEcology/lab4_autocorrelation.html</a></p>
+<pre class="r"><code>plantVarCloud &lt;- variogram(num_species~1, data = plant_richness_grid, cloud = TRUE)
+plot(plantVarCloud, pch=20,cex=1.5,col=&quot;black&quot;,
+     ylab=expression(&quot;Semivariance (&quot;*gamma*&quot;)&quot;),
+     xlab=&quot;Distance (m)&quot;,main = &quot;Species Richness Ecuador Plants - Cleaned&quot;)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plantVar &lt;- variogram(num_species~1, data = plant_richness_grid)
+plot(plantVar, pch=20,cex=1.5,col=&quot;black&quot;,
+     ylab=expression(&quot;Semivariance (&quot;*gamma*&quot;)&quot;),
+     xlab=&quot;Distance (m)&quot;,main = &quot;Species Richness Ecuador Plants - Cleaned&quot;)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-15-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plantVar2Cloud &lt;- variogram(num_species~1, data = plant_richness_grid2, cloud = TRUE)
+plot(plantVar2Cloud, pch=20,cex=1.5,col=&quot;black&quot;,
+     ylab=expression(&quot;Semivariance (&quot;*gamma*&quot;)&quot;),
+     xlab=&quot;Distance (m)&quot;,main = &quot;Species Richness Ecuador Plants - Raw&quot;)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-15-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plantVar2 &lt;- variogram(num_species~1, data = plant_richness_grid2)
+plot(plantVar2, pch=20,cex=1.5,col=&quot;black&quot;,
+     ylab=expression(&quot;Semivariance (&quot;*gamma*&quot;)&quot;),
+     xlab=&quot;Distance (m)&quot;,main = &quot;Species Richness Ecuador Plants - Raw&quot;)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-15-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plantDirVar &lt;- variogram(num_species~1, data = plant_richness_grid, alpha=c(0,45,90,135))
+plot(plantDirVar,main = &quot;Species Richness Ecuador Plants - Cleaned via Direction&quot;)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plantDirVar2 &lt;- variogram(num_species~1, data = plant_richness_grid2, alpha=c(0,45,90,135))
+plot(plantDirVar2,main = &quot;Species Richness Ecuador Plants - Raw via Direction&quot;)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-16-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(ape)</code></pre>
+<pre><code>
+Attaching package: &#39;ape&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:raster&#39;:
+
+    rotate, zoom</code></pre>
+<pre class="r"><code>hist(plant_richness_grid$num_species)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>hist(plant_richness_grid2$num_species)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>qqnorm(plant_richness_grid$num_species)
+qqline(plant_richness_grid$num_species,col=&quot;green&quot;)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>qqnorm(plant_richness_grid2$num_species)
+qqline(plant_richness_grid2$num_species,col=&quot;green&quot;)</code></pre>
+<p><img src="figure/L2_Ecuador_plant_richness_analysis.Rmd/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Can’t do a Moran’s I test because the data is not normally
+distributed which is an assumption of Moran’s I.</p>
+<p>wflow_publish(“analysis/L2_Ecuador_plant_richness_analysis.Rmd”,
+message = “Analyze richness”)</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.2.2 (2022-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 22621)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] ape_5.6-2           gstat_2.1-0         smoothr_0.2.2      
+ [4] raster_3.6-11       fasterize_1.0.4     ggsn_0.5.0         
+ [7] purrr_0.3.5         rnaturalearth_0.1.0 scico_1.3.1        
+[10] ggplot2_3.4.0       dplyr_1.0.10        sf_1.0-9           
+[13] sp_1.5-1            workflowr_1.7.0    
+
+loaded via a namespace (and not attached):
+ [1] nlme_3.1-160            bitops_1.0-7            fs_1.5.2               
+ [4] xts_0.12.2              httr_1.4.4              rprojroot_2.0.3        
+ [7] tools_4.2.2             bslib_0.4.1             utf8_1.2.2             
+[10] rgdal_1.6-2             R6_2.5.1                KernSmooth_2.23-20     
+[13] DBI_1.1.3               colorspace_2.0-3        withr_2.5.0            
+[16] tidyselect_1.2.0        rnaturalearthdata_0.1.0 processx_3.8.0         
+[19] compiler_4.2.2          git2r_0.30.1            textshaping_0.3.6      
+[22] cli_3.4.1               labeling_0.4.2          sass_0.4.4             
+[25] scales_1.2.1            classInt_0.4-8          callr_3.7.3            
+[28] proxy_0.4-27            systemfonts_1.0.4       stringr_1.5.0          
+[31] digest_0.6.30           foreign_0.8-83          rmarkdown_2.18         
+[34] jpeg_0.1-10             pkgconfig_2.0.3         htmltools_0.5.4        
+[37] fastmap_1.1.0           highr_0.9               rlang_1.0.6            
+[40] rstudioapi_0.14         FNN_1.1.3.1             jquerylib_0.1.4        
+[43] generics_0.1.3          farver_2.1.1            zoo_1.8-11             
+[46] jsonlite_1.8.4          magrittr_2.0.3          s2_1.1.1               
+[49] Rcpp_1.0.9              munsell_0.5.0           fansi_1.0.3            
+[52] lifecycle_1.0.3         terra_1.6-47            stringi_1.7.8          
+[55] whisker_0.4.1           yaml_2.3.6              plyr_1.8.8             
+[58] maptools_1.1-5          parallel_4.2.2          promises_1.2.0.1       
+[61] lattice_0.20-45         knitr_1.41              ps_1.7.2               
+[64] pillar_1.8.1            spacetime_1.2-8         codetools_0.2-18       
+[67] wk_0.7.1                glue_1.6.2              evaluate_0.18          
+[70] getPass_0.2-2           png_0.1-8               vctrs_0.5.1            
+[73] httpuv_1.6.6            RgoogleMaps_1.4.5.3     gtable_0.3.1           
+[76] tidyr_1.2.1             assertthat_0.2.1        cachem_1.0.6           
+[79] xfun_0.35               e1071_1.7-12            later_1.3.0            
+[82] ragg_1.2.4              class_7.3-20            tibble_3.1.8           
+[85] intervals_0.15.2        units_0.8-1             ggmap_3.0.1            </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
