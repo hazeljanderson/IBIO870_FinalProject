@@ -1,5 +1,6 @@
-A repository of code for my final project for MSU Spatial Ecology Graduate Course 2022 (IBIO 870).
+# A repository of code for my final project for MSU Spatial Ecology Graduate Course 2022 (IBIO 870).
 
-See [Workflow.png](https://github.com/hazeljanderson/IBIO870_FinalProject/blob/master/Workflow.png) for workflow.
+## Workflow
+![Workflow](https://github.com/hazeljanderson/IBIO870_FinalProject/blob/master/images/Workflow.png)
 
-*This readme was last modified by HJA 16 November 2022*
+*This readme was last modified by HJA 11 December 2022*
