@@ -7,6 +7,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-This project aims to examine patterns of plant species richness in Ecuador with sampling bias, elevation, and spatial autocorrelation at multiple spatial scales.
+This project aims to examine patterns of plant species richness in Ecuador using cleaned and raw species occurence data from the [Botanical Information and Ecology Network](https://bien.nceas.ucsb.edu/bien/) database.
 
 To learn more about me and my research visit [my website](www.hazeljanderson.com).

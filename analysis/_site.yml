@@ -7,8 +7,12 @@ navbar:
     href: index.html
   - text: About
     href: about.html
-  - text: License
-    href: license.html
+  - text: L0
+    href: L0_BIEN_Ecuador_PlantData.html
+  - text: L1
+    href: L1_Ecuador_BIEN_PlantData_Cleaning.html
+  - text: L2
+    href: L2_Ecuador_plant_richness_analysis.html
   right:
   - icon: fab fa-github
     text: Source code
