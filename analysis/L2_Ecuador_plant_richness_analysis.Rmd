@@ -18,7 +18,7 @@ output_path <- file.path('G:/My Drive/IBIO 870/Final project/data/L2')
 ```
 
 # Load required packages
-```{r}
+```{r, warning=FALSE}
 library(sp)
 library(sf)
 library(dplyr)
@@ -30,7 +30,7 @@ library(ggsn)
 library(fasterize)
 library(raster)
 library(smoothr)
-library(sampbias)
+library(gstat)
 ```
 
 # Load cleaned BIEN data
@@ -51,28 +51,25 @@ Ecuador_plants <- Ecuador_plants %>%
   na.omit()
 
 # convert to sf
-Ecuador_plants_sf <- st_as_sf(Ecuador_plants, coords = c("Longitude", "Latitude"), crs = 32617) %>%
+Ecuador_plants_sf <- st_as_sf(Ecuador_plants, coords = c("Longitude", "Latitude"), crs = 4326) %>%
   group_by(species) %>%
   summarize()
-Ecuador_plants_sf <- st_transform(Ecuador_plants_sf, value = 32617)
 ```
 
 ## Load in world map
 ```{r}
-
 worldMap <- ne_countries(scale = "medium", type = "countries", returnclass = "sf")
-worldMap <- st_transform(worldMap, crs = 32617)
 # country subset
 ECpoly <- worldMap %>% filter(sovereignt == "Ecuador")
-ECpoly <- st_transform(ECpoly, crs = 32617)
+
+# remove galapagos islands for simplicity
+ECpoly <-st_crop(ECpoly, c(xmin=-84, xmax=-75.24961, ymin=-4.990625, ymax=1.455371))
 # trim the map to appropriate study area.
-limsEC <- st_buffer(ECpoly, dist = 0.7) %>% st_bbox()
+limsEC <- st_buffer(ECpoly, dist = 1) %>% st_bbox()
 
 # neighboring countries
 COpoly <- worldMap %>% filter(sovereignt == "Colombia")
-COpoly <- st_transform(COpoly, crs = 32617)
 PEpoly <- worldMap %>% filter(sovereignt == "Peru")
-PEpoly <- st_transform(PEpoly, crs = 32617)
 
 
 divpolPlot <-
@@ -98,35 +95,19 @@ divpolPlot
 ```{r}
 plantPointsPlot <-
   ggplot() +
-  geom_sf(data = COpoly, color = "white") +
-  geom_sf(data = PEpoly, color = "white") +
-  geom_sf(data = ECpoly) +
-  geom_sf(data = Ecuador_plants_sf, pch = 12) +
+  geom_sf(data = Ecuador_plants_sf, pch = 20) +
   coord_sf(
     xlim = c(limsEC["xmin"], limsEC["xmax"]),
     ylim = c(limsEC["ymin"], limsEC["ymax"])
-  ) +
-  theme(
-    plot.background = element_rect(fill = "#f1f2f3"),
-    panel.background = element_rect(fill = "#2F4051"),
-    panel.grid = element_blank(),
-    line = element_blank(),
-    rect = element_blank()
   )
 plantPointsPlot
 ```
 
-```{r}
-plantPointsPlot <-
-  ggplot() +
-  geom_sf(data = Ecuador_plants_sf, pch = 21) 
-plantPointsPlot
-```
 
 ## Define a grid
 ```{r}
 ECGrid <- ECpoly %>%
-st_make_grid(cellsize = 0.2) %>%
+st_make_grid(cellsize = 0.5) %>%
 st_intersection(ECpoly) %>%
 st_cast("MULTIPOLYGON") %>%
 st_sf() %>%
@@ -134,8 +115,9 @@ mutate(cellid = row_number())
 
 gridPlot <-
   ggplot() +
-  geom_sf(data = neighbors, color = "white") +
   geom_sf(data = ECpoly) +
+  geom_sf(data = COpoly, color = "white") +
+  geom_sf(data = PEpoly, color = "white") +
   geom_sf(data = ECGrid) +
   coord_sf(
     xlim = c(limsEC["xmin"], limsEC["xmax"]),
@@ -162,7 +144,8 @@ plant_richness_grid <- ECGrid %>%
 # plot
 plantRichEC <-
   ggplot(plant_richness_grid) +
-  geom_sf(data = neighbors, color = "white") +
+  geom_sf(data = COpoly, color = "white") +
+  geom_sf(data = PEpoly, color = "white") +
   geom_sf(data = ECpoly, fill = "grey", size = 0.1) +
   geom_sf(aes(fill = num_species), color = NA) +
   scale_fill_scico(palette = "davos", direction = -1, end = 0.9, name = "Plant species richness") +
@@ -183,12 +166,125 @@ plantRichEC
 
 ## Saving richness map
 ```{r}
-ggsave(filename = "Plant richness map Ecuador.png", dpi = 300, device="png")
+ggsave(filename = "Richness plot cleaned data.png", dpi = 300, device="png")
 ```
 
+## Calculate Richness with raw data
+```{r}
+Ecuador_plants_raw <- read.csv("G:/My Drive/IBIO 870/Final project/data/L0/Ecuador_BIEN_occurrence.csv")
+```
 
-# Calculate sample bias
+## Convert data into sf object
 ```{r}
 
+# species and lat long data
+Ecuador_plants2 <- Ecuador_plants_raw %>%
+  dplyr::select(scrubbed_species_binomial, longitude, latitude) %>%
+  na.omit()
+
+Ecuador_plants2$species <- Ecuador_plants2$scrubbed_species_binomial
+
+# convert to sf
+Ecuador_plants2_sf <- st_as_sf(Ecuador_plants2, coords = c("longitude", "latitude"), crs = 4326) %>%
+  group_by(species) %>%
+  summarize()
 ```
+
+## Plot points
+```{r}
+plantPointsPlot <-
+  ggplot() +
+  geom_sf(data = Ecuador_plants2_sf, pch = 20) +
+  coord_sf(
+    xlim = c(limsEC["xmin"], limsEC["xmax"]),
+    ylim = c(limsEC["ymin"], limsEC["ymax"])
+  )
+plantPointsPlot
+```
+
+## Richness 
+```{r}
+plant_richness_grid2 <- ECGrid %>%
+  st_join(Ecuador_plants2_sf) %>%
+  mutate(overlap = ifelse(!is.na(species), 1, 0)) %>%
+  group_by(cellid) %>%
+  summarize(num_species = sum(overlap))
+
+# plot
+plantRichEC <-
+  ggplot(plant_richness_grid2) +
+  geom_sf(data = COpoly, color = "white") +
+  geom_sf(data = PEpoly, color = "white") +
+  geom_sf(data = ECpoly, fill = "grey", size = 0.1) +
+  geom_sf(aes(fill = num_species), color = NA) +
+  scale_fill_scico(palette = "davos", direction = -1, end = 0.9, name = "Plant species richness") +
+  coord_sf(
+    xlim = c(limsEC["xmin"], limsEC["xmax"]),
+    ylim = c(limsEC["ymin"], limsEC["ymax"])
+  ) +
+  theme(
+    plot.background = element_rect(fill = "#f1f2f3"),
+    panel.background = element_rect(fill = "#2F4051"),
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    line = element_blank(),
+    rect = element_blank()
+  ) + labs(fill = "richness")
+plantRichEC
+```
+
+## Saving richness map
+```{r}
+ggsave(filename = "Richness plot raw data.png", dpi = 300, device="png")
+```
+# Variograms & Moran's I
+Modified from https://rstudio-pubs-static.s3.amazonaws.com/278910_3ebade4ad6a14f8f9ac6e05eb16b5a21.html & https://space-lab-msu.github.io/MSUGradSpatialEcology/lab4_autocorrelation.html
+
+```{r}
+plantVarCloud <- variogram(num_species~1, data = plant_richness_grid, cloud = TRUE)
+plot(plantVarCloud, pch=20,cex=1.5,col="black",
+     ylab=expression("Semivariance ("*gamma*")"),
+     xlab="Distance (m)",main = "Species Richness Ecuador Plants - Cleaned")
+plantVar <- variogram(num_species~1, data = plant_richness_grid)
+plot(plantVar, pch=20,cex=1.5,col="black",
+     ylab=expression("Semivariance ("*gamma*")"),
+     xlab="Distance (m)",main = "Species Richness Ecuador Plants - Cleaned")
+
+
+plantVar2Cloud <- variogram(num_species~1, data = plant_richness_grid2, cloud = TRUE)
+plot(plantVar2Cloud, pch=20,cex=1.5,col="black",
+     ylab=expression("Semivariance ("*gamma*")"),
+     xlab="Distance (m)",main = "Species Richness Ecuador Plants - Raw")
+plantVar2 <- variogram(num_species~1, data = plant_richness_grid2)
+plot(plantVar2, pch=20,cex=1.5,col="black",
+     ylab=expression("Semivariance ("*gamma*")"),
+     xlab="Distance (m)",main = "Species Richness Ecuador Plants - Raw")
+```
+
+```{r}
+plantDirVar <- variogram(num_species~1, data = plant_richness_grid, alpha=c(0,45,90,135))
+plot(plantDirVar,main = "Species Richness Ecuador Plants - Cleaned via Direction")
+
+plantDirVar2 <- variogram(num_species~1, data = plant_richness_grid2, alpha=c(0,45,90,135))
+plot(plantDirVar2,main = "Species Richness Ecuador Plants - Raw via Direction")
+```
+
+```{r}
+library(ape)
+```
+
+```{r}
+hist(plant_richness_grid$num_species)
+hist(plant_richness_grid2$num_species)
+```
+
+```{r}
+qqnorm(plant_richness_grid$num_species)
+qqline(plant_richness_grid$num_species,col="green")
+
+qqnorm(plant_richness_grid2$num_species)
+qqline(plant_richness_grid2$num_species,col="green")
+```
+
+Can't do a Moran's I test because the data is not normally distributed which is an assumption of Moran's I.
 
