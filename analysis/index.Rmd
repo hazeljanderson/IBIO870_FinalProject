@@ -12,7 +12,7 @@ Welcome to my project website for my final project for Fall 2022 Spatial Ecology
 
 This project follows the [Environmental Data Initative (EDI) workflow](https://environmentaldatainitiative.org/dataset-design/).
 
-![Workflow image](Workflow.png)
+![Workflow image](Workflow.jpg)
 
 1.  [L0_BIEN_Ecuador_PlantData](https://hazeljanderson.github.io/IBIO870_FinalProject/L0_BIEN_Ecuador_PlantData)
 2.  [L1_Ecuador_BIEN_PlantData_Cleaning](https://hazeljanderson.github.io/IBIO870_FinalProject/L1_Ecuador_BIEN_PlantData_Cleaning)
